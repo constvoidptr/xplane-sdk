@@ -1,8 +1,9 @@
+// Some variables / functions may be unused depending on the conditional compilation
+#![allow(unused)]
+
 use std::path::{Path, PathBuf};
 
-#[allow(unused)]
 const XPLANE_SDK_KEY: &str = "XPLANE_SDK";
-#[allow(unused)]
 const XPLANE_SDK_VERSIONS_KEY: &str = "XPLANE_SDK_VERSIONS";
 
 fn main() {
@@ -78,6 +79,7 @@ fn generate_bindings(sdk_path: &Path) {
         .expect("failed to write bindings to disk");
 }
 
+#[cfg(any(target_os = "windows", target_os = "macos"))]
 fn link_libraries(sdk_path: &Path) {
     let library_path = sdk_path.join("Libraries");
 
