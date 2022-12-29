@@ -1,7 +1,7 @@
 # Rust bindings for the X-Plane SDK
 
 [![crates.io](https://img.shields.io/crates/v/xplane-sdk-sys)](https://crates.io/crates/xplane-sdk-sys)
-[![crates.io](https://img.shields.io/readthedocs/xplane-sdk-sys)](https://docs.rs/xplane-sdk-sys/)
+[![Documentation](https://img.shields.io/docsrs/xplane-sdk-sys)](https://docs.rs/xplane-sdk-sys/)
 
 This library uses `bindgen` to generate the bindings.
 
@@ -14,7 +14,7 @@ This library uses `bindgen` to generate the bindings.
 
 ## Generate your own bindings
 
-To generate the bindings yourself, rather than using the pre-built once,
+To generate the bindings yourself, rather than using the pre-built ones,
 activate the `generate-bindings` feature.
 
 ```toml
@@ -27,7 +27,7 @@ environment variable. `xplane-sdk-sys` expects to find the `CHeaders` directory 
 
 ### Custom SDK versions
 
-To future prove this library, it allows you to specify additional SDK version to generator bindings for.
+To future prove this library, it allows you to specify additional SDK versions to generate bindings for.
 
 To do this you'll have to set the `XPLANE_SDK_VERSIONS` environment variable accordingly.
 Setting it to `XPLM400;XPLM401` will, for example, generate bindings for SDK version `4.0.0` and `4.0.1`.

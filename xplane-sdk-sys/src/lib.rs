@@ -6,6 +6,6 @@
 #[cfg(feature = "generate-bindings")]
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
-// Use prebuild bindings
+// Use pre-built bindings
 #[cfg(not(feature = "generate-bindings"))]
 include!("pre-built-bindings.rs");
