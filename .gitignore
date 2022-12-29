@@ -5,6 +5,3 @@ Cargo.lock
 # Editor configuration
 .idea/
 .vscode/
-
-# Ignore X-Plane SDK
-SDK/
