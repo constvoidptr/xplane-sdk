@@ -25,6 +25,11 @@ This will invoke `bindgen` at compile time in a build script to generate the bin
 You'll have to specify the location of the SDK in your filesystem by setting the `XPLANE_SDK`
 environment variable. `xplane-sdk-sys` expects to find the `CHeaders` directory in the specified folder.
 
+### Requirements
+
+`xplane-sdk-sys` inherits the `bindgen` requirements. They are
+documented [here](https://rust-lang.github.io/rust-bindgen/requirements.html).
+
 ### Custom SDK versions
 
 To future prove this library, it allows you to specify additional SDK versions to generate bindings for.
