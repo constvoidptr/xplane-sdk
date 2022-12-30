@@ -9,7 +9,10 @@ const XPLANE_SDK_VERSIONS_KEY: &str = "XPLANE_SDK_VERSIONS";
 fn main() {
     // Pre-built SDK path
     #[cfg(not(feature = "generate-bindings"))]
-    let sdk_path = PathBuf::from("SDK");
+    let sdk_path = PathBuf::from(
+        std::env::var("CARGO_MANIFEST_DIR").expect("failed to locate CARGO_MANIFEST_DIR"),
+    )
+    .join("SDK");
 
     // Retrieve SKD path from environment variable
     #[cfg(feature = "generate-bindings")]
