@@ -1,23 +1,23 @@
-// Some variables / functions may be unused depending on the conditional compilation
-#![allow(unused)]
-
 use std::path::{Path, PathBuf};
 
-const XPLANE_SDK_KEY: &str = "XPLANE_SDK";
+#[cfg(feature = "generate-bindings")]
+const XPLANE_SDK_PATH_KEY: &str = "XPLANE_SDK_PATH";
+#[cfg(feature = "generate-bindings")]
 const XPLANE_SDK_VERSIONS_KEY: &str = "XPLANE_SDK_VERSIONS";
 
 fn main() {
     // Pre-built SDK path
     #[cfg(not(feature = "generate-bindings"))]
-    let sdk_path = PathBuf::from(
-        std::env::var("CARGO_MANIFEST_DIR").expect("failed to locate CARGO_MANIFEST_DIR"),
-    )
-    .join("SDK");
+    let sdk_path = std::env::var("CARGO_MANIFEST_DIR")
+        .map(PathBuf::from)
+        .expect("failed to locate packaged SDK, env variable `CARGO_MANIFEST_DIR` should be set")
+        .join("SDK");
 
     // Retrieve SKD path from environment variable
     #[cfg(feature = "generate-bindings")]
-    let sdk_path =
-        PathBuf::from(std::env::var(XPLANE_SDK_KEY).expect("failed to locate the X-Plane SDK"));
+    let sdk_path = std::env::var(XPLANE_SDK_PATH_KEY)
+        .map(PathBuf::from)
+        .expect("failed to locate the SDK, env variable `XPLANE_SDK_PATH` should point to the SDK");
 
     // Only generate bindings if the feature is set
     #[cfg(feature = "generate-bindings")]
@@ -32,11 +32,13 @@ fn main() {
 fn generate_bindings(sdk_path: &Path) {
     // Re-run the build script if any SDK change is detected
     println!("cargo:rerun-if-changed=wrapper.h");
-    println!("cargo:rerun-if-env-changed={}", XPLANE_SDK_KEY);
-    println!("cargo:rerun-if-env-changed={}", XPLANE_SDK_VERSIONS_KEY);
+    println!("cargo:rerun-if-env-changed={XPLANE_SDK_PATH_KEY}");
+    println!("cargo:rerun-if-env-changed={XPLANE_SDK_VERSIONS_KEY}");
 
     let include_path = sdk_path.join("CHeaders");
-    let out_path = PathBuf::from(std::env::var("OUT_DIR").unwrap());
+    let out_path = std::env::var("OUT_DIR")
+        .map(PathBuf::from)
+        .expect("env variable `OUT_DIR` should be defined");
 
     // Get custom versions environment variable
     let custom_versions = std::env::var(XPLANE_SDK_VERSIONS_KEY).unwrap_or_default();
@@ -86,6 +88,7 @@ fn generate_bindings(sdk_path: &Path) {
 fn link_libraries(sdk_path: &Path) {
     let library_path = sdk_path.join("Libraries");
 
+    // Can only ever be Windows or MacOS
     if cfg!(windows) {
         println!(
             "cargo:rustc-link-search={}",
