@@ -44,9 +44,9 @@ fn generate_bindings(sdk_path: &Path) {
     let custom_versions = std::env::var(XPLANE_SDK_VERSIONS_KEY).unwrap_or_default();
 
     // Create iterator over custom versions
-    // Seperated by : or ;. Example: "XPLM400;XPLM401"
+    // Semicolon-separated list of SDK versions. Example: "XPLM400;XPLM401"
     let custom_versions_iter = custom_versions
-        .split(|c| c == ':' || c == ';')
+        .split(|c| c == ';')
         .map(|version| version.trim())
         .filter(|version| !version.is_empty())
         .map(|version| format!("-D{}", version));
