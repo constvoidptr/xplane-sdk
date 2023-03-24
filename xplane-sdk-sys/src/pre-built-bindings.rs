@@ -17,7 +17,7 @@ pub const WINT_MIN: u32 = 0;
 pub const WINT_MAX: u32 = 65535;
 pub const XPLM_NO_PLUGIN_ID: i32 = -1;
 pub const XPLM_PLUGIN_XPLANE: u32 = 0;
-pub const kXPLM_Version: u32 = 303;
+pub const kXPLM_Version: u32 = 400;
 pub const XPLM_KEY_RETURN: u32 = 13;
 pub const XPLM_KEY_ESCAPE: u32 = 27;
 pub const XPLM_KEY_TAB: u32 = 9;
@@ -148,6 +148,17 @@ pub const XPLM_VK_BACKQUOTE: u32 = 186;
 pub const XPLM_VK_ENTER: u32 = 187;
 pub const XPLM_VK_NUMPAD_ENT: u32 = 188;
 pub const XPLM_VK_NUMPAD_EQ: u32 = 189;
+pub const xpWidgetClass_None: u32 = 0;
+pub const xpWidgetClass_MainWindow: u32 = 1;
+pub const xpWidgetClass_SubWindow: u32 = 2;
+pub const xpWidgetClass_Button: u32 = 3;
+pub const xpWidgetClass_TextField: u32 = 4;
+pub const xpWidgetClass_ScrollBar: u32 = 5;
+pub const xpWidgetClass_Caption: u32 = 6;
+pub const xpWidgetClass_GeneralGraphics: u32 = 7;
+pub const xpWidgetClass_Progress: u32 = 8;
+pub const NO_PARENT: i32 = -1;
+pub const PARAM_PARENT: i32 = -2;
 pub const XPLM_MAP_USER_INTERFACE: &[u8; 24usize] = b"XPLM_MAP_USER_INTERFACE\0";
 pub const XPLM_MAP_IOS: &[u8; 13usize] = b"XPLM_MAP_IOS\0";
 pub const XPLM_NAV_NOT_FOUND: i32 = -1;
@@ -199,60 +210,107 @@ pub type uint_fast32_t = ::std::os::raw::c_uint;
 pub type uint_fast64_t = ::std::os::raw::c_ulonglong;
 pub type intmax_t = ::std::os::raw::c_longlong;
 pub type uintmax_t = ::std::os::raw::c_ulonglong;
-#[doc = " XPLMPluginID\n\n Each plug-in is identified by a unique integer ID.  This ID can be used to\n disable or enable a plug-in, or discover what plug-in is 'running' at the\n time.  A plug-in ID is unique within the currently running instance of\n X-Plane unless plug-ins are reloaded.  Plug-ins may receive a different\n unique ID each time they are loaded. This includes the unloading and\n reloading of plugins that are part of the user's aircraft.\n\n For persistent identification of plug-ins, use XPLMFindPluginBySignature in\n XPLMUtiltiies.h\n\n -1 indicates no plug-in.\n"]
+#[doc = " XPLMPluginID\n\n Each plug-in is identified by a unique integer ID.  This ID can be used to\n disable or enable a plug-in, or discover what plug-in is 'running' at the\n time.  A plug-in ID is unique within the currently running instance of\n X-Plane unless plug-ins are reloaded.  Plug-ins may receive a different\n unique ID each time they are loaded. This includes the unloading and\n reloading of plugins that are part of the user's aircraft.\n\n For persistent identification of plug-ins, use XPLMFindPluginBySignature in\n XPLMUtiltiies.h .\n\n -1 indicates no plug-in.\n"]
 pub type XPLMPluginID = ::std::os::raw::c_int;
 #[doc = " The shift key is down"]
 pub const xplm_ShiftFlag: _bindgen_ty_1 = 1;
 #[doc = " The option or alt key is down"]
 pub const xplm_OptionAltFlag: _bindgen_ty_1 = 2;
-#[doc = " The control key is down*"]
+#[doc = " The control key is down"]
 pub const xplm_ControlFlag: _bindgen_ty_1 = 4;
 #[doc = " The key is being pressed down"]
 pub const xplm_DownFlag: _bindgen_ty_1 = 8;
 #[doc = " The key is being released"]
 pub const xplm_UpFlag: _bindgen_ty_1 = 16;
-#[doc = " XPLMKeyFlags\n\n These bitfields define modifier keys in a platform independent way. When a\n key is pressed, a series of messages are sent to your plugin.  The down\n flag is set in the first of these messages, and the up flag in the last.\n While the key is held down, messages are sent with neither to indicate that\n the key is being held down as a repeated character.\n\n The control flag is mapped to the control flag on Macintosh and PC.\n Generally X-Plane uses the control key and not the command key on\n Macintosh, providing a consistent interface across platforms that does not\n necessarily match the Macintosh user interface guidelines.  There is not\n yet a way for plugins to access the Macintosh control keys without using\n #ifdefed code.\n"]
+#[doc = " XPLMKeyFlags\n\n These bitfields define modifier keys in a platform independent way. When a\n key is pressed, a series of messages are sent to your plugin.  The down\n flag is set in the first of these messages, and the up flag in the last.\n While the key is held down, messages are sent with neither flag set to\n indicate that the key is being held down as a repeated character.\n\n The control flag is mapped to the control flag on Macintosh and PC.\n Generally X-Plane uses the control key and not the command key on\n Macintosh, providing a consistent interface across platforms that does not\n necessarily match the Macintosh user interface guidelines.  There is not\n yet a way for plugins to access the Macintosh control keys without using\n #ifdefed code.\n"]
 pub type _bindgen_ty_1 = ::std::os::raw::c_int;
 pub type XPLMKeyFlags = ::std::os::raw::c_int;
-#[doc = " Control the camera until the user picks a new view."]
-pub const xplm_ControlCameraUntilViewChanges: _bindgen_ty_2 = 1;
-#[doc = " Control the camera until your plugin is disabled or another plugin forcably*\n takes control."]
-pub const xplm_ControlCameraForever: _bindgen_ty_2 = 2;
-#[doc = " XPLMCameraControlDuration\n\n This enumeration states how long you want to retain control of the camera.\n You can retain it indefinitely or until the user selects a new view.\n"]
-pub type _bindgen_ty_2 = ::std::os::raw::c_int;
-pub type XPLMCameraControlDuration = ::std::os::raw::c_int;
-#[doc = " XPLMCameraPosition_t\n\n This structure contains a full specification of the camera. X, Y, and Z are\n the camera's position in OpenGL coordiantes; pitch, roll, and yaw are\n rotations from a camera facing flat north in degrees. Positive pitch means\n nose up, positive roll means roll right, and positive yaw means yaw right,\n all in degrees. Zoom is a zoom factor, with 1.0 meaning normal zoom and 2.0\n magnifying by 2x (objects appear larger).\n"]
+#[doc = " XPLMFixedString150_t\n\n A container for a fixed-size string buffer of 150 characters.\n"]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct XPLMCameraPosition_t {
-    pub x: f32,
-    pub y: f32,
-    pub z: f32,
-    pub pitch: f32,
-    pub heading: f32,
-    pub roll: f32,
-    pub zoom: f32,
+pub struct XPLMFixedString150_t {
+    #[doc = " The size of the struct."]
+    pub buffer: [::std::os::raw::c_char; 150usize],
 }
 #[test]
-fn bindgen_test_layout_XPLMCameraPosition_t() {
-    const UNINIT: ::std::mem::MaybeUninit<XPLMCameraPosition_t> = ::std::mem::MaybeUninit::uninit();
+fn bindgen_test_layout_XPLMFixedString150_t() {
+    const UNINIT: ::std::mem::MaybeUninit<XPLMFixedString150_t> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of::<XPLMCameraPosition_t>(),
-        28usize,
-        concat!("Size of: ", stringify!(XPLMCameraPosition_t))
+        ::std::mem::size_of::<XPLMFixedString150_t>(),
+        150usize,
+        concat!("Size of: ", stringify!(XPLMFixedString150_t))
     );
     assert_eq!(
-        ::std::mem::align_of::<XPLMCameraPosition_t>(),
+        ::std::mem::align_of::<XPLMFixedString150_t>(),
+        1usize,
+        concat!("Alignment of ", stringify!(XPLMFixedString150_t))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).buffer) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(XPLMFixedString150_t),
+            "::",
+            stringify!(buffer)
+        )
+    );
+}
+#[doc = " XPWidgetID\n\n A Widget ID is an opaque unique non-zero handle identifying your widget.\n Use 0 to specify \"no widget\". This type is defined as wide enough to hold a\n pointer. You receive a widget ID when you create a new widget and then use\n that widget ID to further refer to the widget.\n"]
+pub type XPWidgetID = *mut ::std::os::raw::c_void;
+#[doc = " A window's refcon is an opaque value used by client code to find other data*\n based on it."]
+pub const xpProperty_Refcon: _bindgen_ty_2 = 0;
+#[doc = " These properties are used by the utilities to implement dragging."]
+pub const xpProperty_Dragging: _bindgen_ty_2 = 1;
+#[doc = " These properties are used by the utilities to implement dragging."]
+pub const xpProperty_DragXOff: _bindgen_ty_2 = 2;
+#[doc = " These properties are used by the utilities to implement dragging."]
+pub const xpProperty_DragYOff: _bindgen_ty_2 = 3;
+#[doc = " Is the widget highlighted?  (For widgets that support this kind of thing.)"]
+pub const xpProperty_Hilited: _bindgen_ty_2 = 4;
+#[doc = " Is there a C++ object attached to this widget?"]
+pub const xpProperty_Object: _bindgen_ty_2 = 5;
+#[doc = " If this property is 1, the widget package will use OpenGL to restrict      *\n drawing to the Widget's exposed rectangle."]
+pub const xpProperty_Clip: _bindgen_ty_2 = 6;
+#[doc = " Is this widget enabled (for those that have a disabled state too)?"]
+pub const xpProperty_Enabled: _bindgen_ty_2 = 7;
+#[doc = " NOTE: Property IDs 1 - 999 are reserved for the widgets library.           *\n                                                                            *\n NOTE: Property IDs 1000 - 9999 are allocated to the standard widget classes*\n provided with the library.                                                 *\n                                                                            *\n Properties 1000 - 1099 are for widget class 0, 1100 - 1199 for widget class*\n 1, etc."]
+pub const xpProperty_UserStart: _bindgen_ty_2 = 10000;
+#[doc = " XPWidgetPropertyID\n\n Properties are values attached to instances of your widgets. A property is\n identified by a 32-bit ID and its value is the width of a pointer.\n\n Each widget instance may have a property or not have it. When you set a\n property on a widget for the first time, the property is added to the\n widget; it then stays there for the life of the widget.\n\n Some property IDs are predefined by the widget package; you can make up\n your own property IDs as well.\n"]
+pub type _bindgen_ty_2 = ::std::os::raw::c_int;
+pub type XPWidgetPropertyID = ::std::os::raw::c_int;
+#[doc = " XPMouseState_t\n\n When the mouse is clicked or dragged, a pointer to this structure is passed\n to your widget function.\n"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct XPMouseState_t {
+    pub x: ::std::os::raw::c_int,
+    pub y: ::std::os::raw::c_int,
+    #[doc = " Mouse button number, left = 0 (right button not yet supported."]
+    pub button: ::std::os::raw::c_int,
+    #[doc = " Scroll wheel delta (button in this case would be the wheel axis number)."]
+    pub delta: ::std::os::raw::c_int,
+}
+#[test]
+fn bindgen_test_layout_XPMouseState_t() {
+    const UNINIT: ::std::mem::MaybeUninit<XPMouseState_t> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<XPMouseState_t>(),
+        16usize,
+        concat!("Size of: ", stringify!(XPMouseState_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<XPMouseState_t>(),
         4usize,
-        concat!("Alignment of ", stringify!(XPLMCameraPosition_t))
+        concat!("Alignment of ", stringify!(XPMouseState_t))
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
-            stringify!(XPLMCameraPosition_t),
+            stringify!(XPMouseState_t),
             "::",
             stringify!(x)
         )
@@ -262,346 +320,576 @@ fn bindgen_test_layout_XPLMCameraPosition_t() {
         4usize,
         concat!(
             "Offset of field: ",
-            stringify!(XPLMCameraPosition_t),
+            stringify!(XPMouseState_t),
             "::",
             stringify!(y)
         )
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).z) as usize - ptr as usize },
+        unsafe { ::std::ptr::addr_of!((*ptr).button) as usize - ptr as usize },
         8usize,
         concat!(
             "Offset of field: ",
-            stringify!(XPLMCameraPosition_t),
+            stringify!(XPMouseState_t),
             "::",
-            stringify!(z)
+            stringify!(button)
         )
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).pitch) as usize - ptr as usize },
+        unsafe { ::std::ptr::addr_of!((*ptr).delta) as usize - ptr as usize },
         12usize,
         concat!(
             "Offset of field: ",
-            stringify!(XPLMCameraPosition_t),
+            stringify!(XPMouseState_t),
             "::",
-            stringify!(pitch)
+            stringify!(delta)
+        )
+    );
+}
+#[doc = " XPKeyState_t\n\n When a key is pressed, a pointer to this struct is passed to your widget\n function.\n"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct XPKeyState_t {
+    #[doc = " The ASCII key that was pressed.  WARNING: this may be 0 for some non-ASCII *\n key sequences."]
+    pub key: ::std::os::raw::c_char,
+    #[doc = " The flags.  Make sure to check this if you only want key-downs!"]
+    pub flags: XPLMKeyFlags,
+    #[doc = " The virtual key code for the key"]
+    pub vkey: ::std::os::raw::c_char,
+}
+#[test]
+fn bindgen_test_layout_XPKeyState_t() {
+    const UNINIT: ::std::mem::MaybeUninit<XPKeyState_t> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<XPKeyState_t>(),
+        12usize,
+        concat!("Size of: ", stringify!(XPKeyState_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<XPKeyState_t>(),
+        4usize,
+        concat!("Alignment of ", stringify!(XPKeyState_t))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).key) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(XPKeyState_t),
+            "::",
+            stringify!(key)
         )
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).heading) as usize - ptr as usize },
+        unsafe { ::std::ptr::addr_of!((*ptr).flags) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(XPKeyState_t),
+            "::",
+            stringify!(flags)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).vkey) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(XPKeyState_t),
+            "::",
+            stringify!(vkey)
+        )
+    );
+}
+#[doc = " XPWidgetGeometryChange_t\n\n This structure contains the deltas for your widget's geometry when it\n changes.\n"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct XPWidgetGeometryChange_t {
+    pub dx: ::std::os::raw::c_int,
+    #[doc = " +Y = the widget moved up"]
+    pub dy: ::std::os::raw::c_int,
+    pub dwidth: ::std::os::raw::c_int,
+    pub dheight: ::std::os::raw::c_int,
+}
+#[test]
+fn bindgen_test_layout_XPWidgetGeometryChange_t() {
+    const UNINIT: ::std::mem::MaybeUninit<XPWidgetGeometryChange_t> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<XPWidgetGeometryChange_t>(),
         16usize,
+        concat!("Size of: ", stringify!(XPWidgetGeometryChange_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<XPWidgetGeometryChange_t>(),
+        4usize,
+        concat!("Alignment of ", stringify!(XPWidgetGeometryChange_t))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).dx) as usize - ptr as usize },
+        0usize,
         concat!(
             "Offset of field: ",
-            stringify!(XPLMCameraPosition_t),
+            stringify!(XPWidgetGeometryChange_t),
             "::",
-            stringify!(heading)
+            stringify!(dx)
         )
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).roll) as usize - ptr as usize },
-        20usize,
+        unsafe { ::std::ptr::addr_of!((*ptr).dy) as usize - ptr as usize },
+        4usize,
         concat!(
             "Offset of field: ",
-            stringify!(XPLMCameraPosition_t),
+            stringify!(XPWidgetGeometryChange_t),
             "::",
-            stringify!(roll)
+            stringify!(dy)
         )
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).zoom) as usize - ptr as usize },
-        24usize,
+        unsafe { ::std::ptr::addr_of!((*ptr).dwidth) as usize - ptr as usize },
+        8usize,
         concat!(
             "Offset of field: ",
-            stringify!(XPLMCameraPosition_t),
+            stringify!(XPWidgetGeometryChange_t),
             "::",
-            stringify!(zoom)
+            stringify!(dwidth)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).dheight) as usize - ptr as usize },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(XPWidgetGeometryChange_t),
+            "::",
+            stringify!(dheight)
         )
     );
 }
-#[doc = " XPLMCameraControl_f\n\n You use an XPLMCameraControl function to provide continuous control over\n the camera. You are passed in a structure in which to put the new camera\n position; modify it and return 1 to reposition the camera. Return 0 to\n surrender control of the camera; camera control will be handled by X-Plane\n on this draw loop. The contents of the structure as you are called are\n undefined.\n\n If X-Plane is taking camera control away from you, this function will be\n called with inIsLosingControl set to 1 and ioCameraPosition NULL.\n"]
-pub type XPLMCameraControl_f = ::std::option::Option<
-    unsafe extern "C" fn(
-        outCameraPosition: *mut XPLMCameraPosition_t,
-        inIsLosingControl: ::std::os::raw::c_int,
-        inRefcon: *mut ::std::os::raw::c_void,
-    ) -> ::std::os::raw::c_int,
->;
-extern "C" {
-    #[doc = " XPLMControlCamera\n\n This function repositions the camera on the next drawing cycle. You must\n pass a non-null control function. Specify in inHowLong how long you'd like\n control (indefinitely or until a new view mode is set by the user).\n"]
-    pub fn XPLMControlCamera(
-        inHowLong: XPLMCameraControlDuration,
-        inControlFunc: XPLMCameraControl_f,
-        inRefcon: *mut ::std::os::raw::c_void,
-    );
-}
-extern "C" {
-    #[doc = " XPLMDontControlCamera\n\n This function stops you from controlling the camera. If you have a camera\n control function, it will not be called with an inIsLosingControl flag.\n X-Plane will control the camera on the next cycle.\n\n For maximum compatibility you should not use this routine unless you are in\n posession of the camera.\n"]
-    pub fn XPLMDontControlCamera();
-}
-extern "C" {
-    #[doc = " XPLMIsCameraBeingControlled\n\n This routine returns 1 if the camera is being controlled, zero if it is\n not. If it is and you pass in a pointer to a camera control duration, the\n current control duration will be returned.\n"]
-    pub fn XPLMIsCameraBeingControlled(
-        outCameraControlDuration: *mut XPLMCameraControlDuration,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    #[doc = " XPLMReadCameraPosition\n\n This function reads the current camera position.\n"]
-    pub fn XPLMReadCameraPosition(outCameraPosition: *mut XPLMCameraPosition_t);
-}
-#[doc = " XPLMDataRef\n\n A data ref is an opaque handle to data provided by the simulator or another\n plugin. It uniquely identifies one variable (or array of variables) over\n the lifetime of your plugin. You never hard code these values; you always\n get them from XPLMFindDataRef.\n"]
-pub type XPLMDataRef = *mut ::std::os::raw::c_void;
-#[doc = " Data of a type the current XPLM doesn't do."]
-pub const xplmType_Unknown: _bindgen_ty_3 = 0;
-#[doc = " A single 4-byte integer, native endian."]
-pub const xplmType_Int: _bindgen_ty_3 = 1;
-#[doc = " A single 4-byte float, native endian."]
-pub const xplmType_Float: _bindgen_ty_3 = 2;
-#[doc = " A single 8-byte double, native endian."]
-pub const xplmType_Double: _bindgen_ty_3 = 4;
-#[doc = " An array of 4-byte floats, native endian."]
-pub const xplmType_FloatArray: _bindgen_ty_3 = 8;
-#[doc = " An array of 4-byte integers, native endian."]
-pub const xplmType_IntArray: _bindgen_ty_3 = 16;
-#[doc = " A variable block of data."]
-pub const xplmType_Data: _bindgen_ty_3 = 32;
-#[doc = " XPLMDataTypeID\n\n This is an enumeration that defines the type of the data behind a data\n reference. This allows you to sanity check that the data type matches what\n you expect. But for the most part, you will know the type of data you are\n expecting from the online documentation.\n\n Data types each take a bit field; it is legal to have a single dataref be\n more than one type of data.  Whe this happens, you can pick any matching\n get/set API.\n"]
+#[doc = " The message will only be sent to the target widget."]
+pub const xpMode_Direct: _bindgen_ty_3 = 0;
+#[doc = " The message is sent to the target widget, then up the chain of parents     *\n until the message is handled or a parentless widget is reached."]
+pub const xpMode_UpChain: _bindgen_ty_3 = 1;
+#[doc = " The message is sent to the target widget and then all of its children      *\n recursively depth-first."]
+pub const xpMode_Recursive: _bindgen_ty_3 = 2;
+#[doc = " The message is sent just to the target, but goes to every callback, even if*\n it is handled."]
+pub const xpMode_DirectAllCallbacks: _bindgen_ty_3 = 3;
+#[doc = " The message is only sent to the very first handler even if it is not       *\n accepted. (This is really only useful for some internal widget library     *\n functions.)"]
+pub const xpMode_Once: _bindgen_ty_3 = 4;
+#[doc = " XPDispatchMode\n\n The dispatching modes describe how the widgets library sends out messages.\n Currently there are three modes:\n"]
 pub type _bindgen_ty_3 = ::std::os::raw::c_int;
-pub type XPLMDataTypeID = ::std::os::raw::c_int;
+pub type XPDispatchMode = ::std::os::raw::c_int;
+#[doc = " XPWidgetClass\n\n Widget classes define predefined widget types. A widget class basically\n specifies from a library the widget function to be used for the widget.\n Most widgets can be made right from classes.\n"]
+pub type XPWidgetClass = ::std::os::raw::c_int;
+#[doc = " No message, should not be sent."]
+pub const xpMsg_None: _bindgen_ty_4 = 0;
+#[doc = " The create message is sent once per widget that is created with your widget*\n function and once for any widget that has your widget function attached.   *\n                                                                            *\n Dispatching: Direct                                                        *\n                                                                            *\n Param 1: 1 if you are being added as a subclass, 0 if the widget is first  *\n being created."]
+pub const xpMsg_Create: _bindgen_ty_4 = 1;
+#[doc = " The destroy message is sent once for each message that is destroyed that   *\n has your widget function.                                                  *\n                                                                            *\n Dispatching: Direct for all                                                *\n                                                                            *\n Param 1: 1 if being deleted by a recursive delete to the parent, 0 for     *\n explicit deletion."]
+pub const xpMsg_Destroy: _bindgen_ty_4 = 2;
+#[doc = " The paint message is sent to your widget to draw itself. The paint message *\n is the bare-bones message; in response you must draw yourself, draw your   *\n children, set up clipping and culling, check for visibility, etc. If you   *\n don't want to do all of this, ignore the paint message and a draw message  *\n (see below) will be sent to you.                                           *\n                                                                            *\n Dispatching: Direct"]
+pub const xpMsg_Paint: _bindgen_ty_4 = 3;
+#[doc = " The draw message is sent to your widget when it is time to draw yourself.  *\n OpenGL will be set up to draw in 2-d global screen coordinates, but you    *\n should use the XPLM to set up OpenGL state.                                *\n                                                                            *\n Dispatching: Direct"]
+pub const xpMsg_Draw: _bindgen_ty_4 = 4;
+#[doc = " The key press message is sent once per key that is pressed. The first      *\n parameter is the type of key code (integer or char) and the second is the  *\n code itself. By handling this event, you consume the key stroke.           *\n                                                                            *\n Handling this message 'consumes' the keystroke; not handling it passes it  *\n to your parent widget.                                                     *\n                                                                            *\n Dispatching: Up Chain                                                      *\n                                                                            *\n Param 1: A pointer to an XPKeyState_t structure with the keystroke."]
+pub const xpMsg_KeyPress: _bindgen_ty_4 = 5;
+#[doc = " Keyboard focus is being given to you. By handling this message you accept  *\n keyboard focus. The first parameter will be one if a child of yours gave up*\n focus to you, 0 if someone set focus on you explicitly.                    *\n                                                                            *\n Handling this message accepts focus; not handling refuses focus.           *\n                                                                            *\n Dispatching: direct                                                        *\n                                                                            *\n Param 1: 1 if you are gaining focus because your child is giving it up, 0  *\n if someone is explicitly giving you focus."]
+pub const xpMsg_KeyTakeFocus: _bindgen_ty_4 = 6;
+#[doc = " Keyboard focus is being taken away from you. The first parameter will be 1 *\n if you are losing focus because another widget is taking it, or 0 if       *\n someone called the API to make you lose focus explicitly.                  *\n                                                                            *\n Dispatching: Direct                                                        *\n                                                                            *\n Param 1: 1 if focus is being taken by another widget, 0 if code requested  *\n to remove focus."]
+pub const xpMsg_KeyLoseFocus: _bindgen_ty_4 = 7;
+#[doc = " You receive one mousedown event per click with a mouse-state structure     *\n pointed to by parameter 1. By accepting this you eat the click, otherwise  *\n your parent gets it. You will not receive drag and mouse up messages if you*\n do not accept the down message.                                            *\n                                                                            *\n Handling this message consumes the mouse click, not handling it passes it  *\n to the next widget. You can act 'transparent' as a window by never handling*\n moues clicks to certain areas.                                             *\n                                                                            *\n Dispatching: Up chain NOTE: Technically this is direct dispatched, but the *\n widgets library will ship it to each widget until one consumes the click,  *\n making it effectively \"up chain\".                                          *\n                                                                            *\n Param 1: A pointer to an XPMouseState_t containing the mouse status."]
+pub const xpMsg_MouseDown: _bindgen_ty_4 = 8;
+#[doc = " You receive a series of mouse drag messages (typically one per frame in the*\n sim) as the mouse is moved once you have accepted a mouse down message.    *\n Parameter one points to a mouse-state structure describing the mouse       *\n location. You will continue to receive these until the mouse button is     *\n released. You may receive multiple mouse state messages with the same mouse*\n position. You will receive mouse drag events even if the mouse is dragged  *\n out of your current or original bounds at the time of the mouse down.      *\n                                                                            *\n Dispatching: Direct                                                        *\n                                                                            *\n Param 1: A pointer to an XPMouseState_t containing the mouse status."]
+pub const xpMsg_MouseDrag: _bindgen_ty_4 = 9;
+#[doc = " The mouseup event is sent once when the mouse button is released after a   *\n drag or click. You only receive this message if you accept the mouseDown   *\n message. Parameter one points to a mouse state structure.                  *\n                                                                            *\n Dispatching: Direct                                                        *\n                                                                            *\n Param 1: A pointer to an XPMouseState_t containing the mouse status."]
+pub const xpMsg_MouseUp: _bindgen_ty_4 = 10;
+#[doc = " Your geometry or a child's geometry is being changed.                      *\n                                                                            *\n Dispatching: Up chain                                                      *\n                                                                            *\n Param 1: The widget ID of the original reshaped target.                    *\n                                                                            *\n Param 2: A pointer to a XPWidgetGeometryChange_t struct describing the     *\n change."]
+pub const xpMsg_Reshape: _bindgen_ty_4 = 11;
+#[doc = " Your exposed area has changed.                                             *\n                                                                            *\n Dispatching: Direct"]
+pub const xpMsg_ExposedChanged: _bindgen_ty_4 = 12;
+#[doc = " A child has been added to you. The child's ID is passed in parameter one.  *\n                                                                            *\n Dispatching: Direct                                                        *\n                                                                            *\n Param 1: The Widget ID of the child being added."]
+pub const xpMsg_AcceptChild: _bindgen_ty_4 = 13;
+#[doc = " A child has been removed from you. The child's ID is passed in parameter   *\n one.                                                                       *\n                                                                            *\n Dispatching: Direct                                                        *\n                                                                            *\n Param 1: The Widget ID of the child being removed."]
+pub const xpMsg_LoseChild: _bindgen_ty_4 = 14;
+#[doc = " You now have a new parent, or have no parent. The parent's ID is passed in,*\n or 0 for no parent.                                                        *\n                                                                            *\n Dispatching: Direct                                                        *\n                                                                            *\n Param 1: The Widget ID of your parent"]
+pub const xpMsg_AcceptParent: _bindgen_ty_4 = 15;
+#[doc = " You or a child has been shown. Note that this does not include you being   *\n shown because your parent was shown, you were put in a new parent, your    *\n root was shown, etc.                                                       *\n                                                                            *\n Dispatching: Up chain                                                      *\n                                                                            *\n Param 1: The widget ID of the shown widget."]
+pub const xpMsg_Shown: _bindgen_ty_4 = 16;
+#[doc = " You have been hidden. See limitations above.                               *\n                                                                            *\n Dispatching: Up chain                                                      *\n                                                                            *\n Param 1: The widget ID of the hidden widget."]
+pub const xpMsg_Hidden: _bindgen_ty_4 = 17;
+#[doc = " Your descriptor has changed.                                               *\n                                                                            *\n Dispatching: Direct"]
+pub const xpMsg_DescriptorChanged: _bindgen_ty_4 = 18;
+#[doc = " A property has changed. Param 1 contains the property ID.                  *\n                                                                            *\n Dispatching: Direct                                                        *\n                                                                            *\n Param 1: The Property ID being changed.                                    *\n                                                                            *\n Param 2: The new property value"]
+pub const xpMsg_PropertyChanged: _bindgen_ty_4 = 19;
+#[doc = " The mouse wheel has moved.                                                 *\n                                                                            *\n Return 1 to consume the mouse wheel move, or 0 to pass the message to a    *\n parent. Dispatching: Up chain                                              *\n                                                                            *\n Param 1: A pointer to an XPMouseState_t containing the mouse status."]
+pub const xpMsg_MouseWheel: _bindgen_ty_4 = 20;
+#[doc = " The cursor is over your widget. If you consume this message, change the    *\n XPLMCursorStatus value to indicate the desired result, with the same rules *\n as in XPLMDisplay.h.                                                       *\n                                                                            *\n Return 1 to consume this message, 0 to pass it on.                         *\n                                                                            *\n Dispatching: Up chain Param 1: A pointer to an XPMouseState_t struct       *\n containing the mouse status.                                               *\n                                                                            *\n Param 2: A pointer to a XPLMCursorStatus - set this to the cursor result   *\n you desire."]
+pub const xpMsg_CursorAdjust: _bindgen_ty_4 = 21;
+#[doc = " NOTE: Message IDs 1000 - 9999 are allocated to the standard widget classes *\n provided with the library with 1000 - 1099 for widget class 0, 1100 - 1199 *\n for widget class 1, etc. Message IDs 10,000 and beyond are for plugin use."]
+pub const xpMsg_UserStart: _bindgen_ty_4 = 10000;
+#[doc = " XPWidgetMessage\n\n Widgets receive 32-bit messages indicating what action is to be taken or\n notifications of events. The list of messages may be expanded.\n"]
+pub type _bindgen_ty_4 = ::std::os::raw::c_int;
+pub type XPWidgetMessage = ::std::os::raw::c_int;
+#[doc = " XPWidgetFunc_t\n\n This function defines your custom widget's behavior. It will be called by\n the widgets library to send messages to your widget. The message and widget\n ID are passed in, as well as two pointer-width signed parameters whose\n meaning varies with the message. Return 1 to indicate that you have\n processed the message, 0 to indicate that you have not. For any message\n that is not understood, return 0.\n"]
+pub type XPWidgetFunc_t = ::std::option::Option<
+    unsafe extern "C" fn(
+        inMessage: XPWidgetMessage,
+        inWidget: XPWidgetID,
+        inParam1: isize,
+        inParam2: isize,
+    ) -> ::std::os::raw::c_int,
+>;
+#[doc = " The standard main window; pin stripes on XP7, metal frame on XP 6."]
+pub const xpMainWindowStyle_MainWindow: _bindgen_ty_5 = 0;
+#[doc = " A translucent dark gray window."]
+pub const xpMainWindowStyle_Translucent: _bindgen_ty_5 = 1;
+#[doc = " Main Window Type Values\n\n These type values are used to control the appearance of a main window.\n"]
+pub type _bindgen_ty_5 = ::std::os::raw::c_int;
+#[doc = " This property specifies the type of window.  Set to one of the main window *\n types above."]
+pub const xpProperty_MainWindowType: _bindgen_ty_6 = 1100;
+#[doc = " This property specifies whether the main window has close boxes in its     *\n corners."]
+pub const xpProperty_MainWindowHasCloseBoxes: _bindgen_ty_6 = 1200;
+#[doc = " Main Window Properties\n"]
+pub type _bindgen_ty_6 = ::std::os::raw::c_int;
+#[doc = " This message is sent when the close buttons for your window are pressed."]
+pub const xpMessage_CloseButtonPushed: _bindgen_ty_7 = 1200;
+#[doc = " MainWindow Messages\n"]
+pub type _bindgen_ty_7 = ::std::os::raw::c_int;
+#[doc = " A panel that sits inside a main window."]
+pub const xpSubWindowStyle_SubWindow: _bindgen_ty_8 = 0;
+#[doc = " A screen that sits inside a panel for showing text information."]
+pub const xpSubWindowStyle_Screen: _bindgen_ty_8 = 2;
+#[doc = " A list view for scrolling lists."]
+pub const xpSubWindowStyle_ListView: _bindgen_ty_8 = 3;
+#[doc = " SubWindow Type Values\n\n These values control the appearance of the subwindow.\n"]
+pub type _bindgen_ty_8 = ::std::os::raw::c_int;
+#[doc = " This property specifies the type of window.  Set to one of the subwindow   *\n types above."]
+pub const xpProperty_SubWindowType: _bindgen_ty_9 = 1200;
+#[doc = " SubWindow Properties\n"]
+pub type _bindgen_ty_9 = ::std::os::raw::c_int;
+#[doc = " This is a standard push button, like an 'OK' or 'Cancel' button in a dialog*\n box."]
+pub const xpPushButton: _bindgen_ty_10 = 0;
+#[doc = " A check box or radio button.  Use this and the button behaviors below to   *\n get the desired behavior."]
+pub const xpRadioButton: _bindgen_ty_10 = 1;
+#[doc = " A window close box."]
+pub const xpWindowCloseBox: _bindgen_ty_10 = 3;
+#[doc = " A small down arrow."]
+pub const xpLittleDownArrow: _bindgen_ty_10 = 5;
+#[doc = " A small up arrow."]
+pub const xpLittleUpArrow: _bindgen_ty_10 = 6;
+#[doc = " Button Types\n\n These define the visual appearance of buttons but not how they respond to\n the mouse.\n"]
+pub type _bindgen_ty_10 = ::std::os::raw::c_int;
+#[doc = " Standard push button behavior. The button highlights while the mouse is    *\n clicked over it and unhighlights when the mouse is moved outside of it or  *\n released. If the mouse is released over the button, the                    *\n xpMsg_PushButtonPressed message is sent."]
+pub const xpButtonBehaviorPushButton: _bindgen_ty_11 = 0;
+#[doc = " Check box behavior. The button immediately toggles its value when the mouse*\n is clicked and sends out a xpMsg_ButtonStateChanged message."]
+pub const xpButtonBehaviorCheckBox: _bindgen_ty_11 = 1;
+#[doc = " Radio button behavior. The button immediately sets its state to one and    *\n sends out a xpMsg_ButtonStateChanged message if it was not already set to  *\n one. You must turn off other radio buttons in a group in your code."]
+pub const xpButtonBehaviorRadioButton: _bindgen_ty_11 = 2;
+#[doc = " Button Behavior Values\n\n These define how the button responds to mouse clicks.\n"]
+pub type _bindgen_ty_11 = ::std::os::raw::c_int;
+#[doc = " This property sets the visual type of button.  Use one of the button types *\n above."]
+pub const xpProperty_ButtonType: _bindgen_ty_12 = 1300;
+#[doc = " This property sets the button's behavior.  Use one of the button behaviors *\n above."]
+pub const xpProperty_ButtonBehavior: _bindgen_ty_12 = 1301;
+#[doc = " This property tells whether a check box or radio button is \"checked\" or    *\n not. Not used for push buttons."]
+pub const xpProperty_ButtonState: _bindgen_ty_12 = 1302;
+#[doc = " Button Properties\n"]
+pub type _bindgen_ty_12 = ::std::os::raw::c_int;
+#[doc = " This message is sent when the user completes a click and release in a      *\n button with push button behavior. Parameter one of the message is the      *\n widget ID of the button. This message is dispatched up the widget          *\n hierarchy."]
+pub const xpMsg_PushButtonPressed: _bindgen_ty_13 = 1300;
+#[doc = " This message is sent when a button is clicked that has radio button or     *\n check box behavior and its value changes. (Note that if the value changes  *\n by setting a property you do not receive this message!) Parameter one is   *\n the widget ID of the button, parameter 2 is the new state value, either    *\n zero or one. This message is dispatched up the widget hierarchy."]
+pub const xpMsg_ButtonStateChanged: _bindgen_ty_13 = 1301;
+#[doc = " Button Messages\n\n These messages are sent by the button to itself and then up the widget\n chain when the button is clicked. (You may intercept them by providing a\n widget handler for the button itself or by providing a handler in a parent\n widget.)\n"]
+pub type _bindgen_ty_13 = ::std::os::raw::c_int;
+#[doc = " A field for text entry."]
+pub const xpTextEntryField: _bindgen_ty_14 = 0;
+#[doc = " A transparent text field. The user can type and the text is drawn, but no  *\n background is drawn. You can draw your own background by adding a widget   *\n handler and prehandling the draw message."]
+pub const xpTextTransparent: _bindgen_ty_14 = 3;
+#[doc = " A translucent edit field, dark gray."]
+pub const xpTextTranslucent: _bindgen_ty_14 = 4;
+#[doc = " Text Field Type Values\n\n These control the look of the text field.\n"]
+pub type _bindgen_ty_14 = ::std::os::raw::c_int;
+#[doc = " This is the character position the selection starts at, zero based. If it  *\n is the same as the end insertion point, the insertion point is not a       *\n selection."]
+pub const xpProperty_EditFieldSelStart: _bindgen_ty_15 = 1400;
+#[doc = " This is the character position of the end of the selection."]
+pub const xpProperty_EditFieldSelEnd: _bindgen_ty_15 = 1401;
+#[doc = " This is the character position a drag was started at if the user is        *\n dragging to select text, or -1 if a drag is not in progress."]
+pub const xpProperty_EditFieldSelDragStart: _bindgen_ty_15 = 1402;
+#[doc = " This is the type of text field to display, from the above list."]
+pub const xpProperty_TextFieldType: _bindgen_ty_15 = 1403;
+#[doc = " Set this property to 1 to password protect the field. Characters will be   *\n drawn as *s even though the descriptor will contain plain-text."]
+pub const xpProperty_PasswordMode: _bindgen_ty_15 = 1404;
+#[doc = " The max number of characters you can enter, if limited.  Zero means        *\n unlimited."]
+pub const xpProperty_MaxCharacters: _bindgen_ty_15 = 1405;
+#[doc = " The first visible character on the left.  This effectively scrolls the text*\n field."]
+pub const xpProperty_ScrollPosition: _bindgen_ty_15 = 1406;
+#[doc = " The font to draw the field's text with.  (An XPLMFontID.)"]
+pub const xpProperty_Font: _bindgen_ty_15 = 1407;
+#[doc = " This is the active side of the insert selection.  (Internal)"]
+pub const xpProperty_ActiveEditSide: _bindgen_ty_15 = 1408;
+#[doc = " Text Field Properties\n"]
+pub type _bindgen_ty_15 = ::std::os::raw::c_int;
+#[doc = " The text field sends this message to itself when its text changes. It sends*\n the message up the call chain; param1 is the text field's widget ID."]
+pub const xpMsg_TextFieldChanged: _bindgen_ty_16 = 1400;
+#[doc = " Text Field Messages\n"]
+pub type _bindgen_ty_16 = ::std::os::raw::c_int;
+#[doc = " A standard X-Plane scroll bar (with arrows on the ends)."]
+pub const xpScrollBarTypeScrollBar: _bindgen_ty_17 = 0;
+#[doc = " A slider, no arrows."]
+pub const xpScrollBarTypeSlider: _bindgen_ty_17 = 1;
+#[doc = " Scroll Bar Type Values\n\n This defines how the scroll bar looks.\n"]
+pub type _bindgen_ty_17 = ::std::os::raw::c_int;
+#[doc = " The current position of the thumb (in between the min and max, inclusive)"]
+pub const xpProperty_ScrollBarSliderPosition: _bindgen_ty_18 = 1500;
+#[doc = " The value the scroll bar has when the thumb is in the lowest position."]
+pub const xpProperty_ScrollBarMin: _bindgen_ty_18 = 1501;
+#[doc = " The value the scroll bar has when the thumb is in the highest position."]
+pub const xpProperty_ScrollBarMax: _bindgen_ty_18 = 1502;
+#[doc = " How many units to move the scroll bar when clicking next to the thumb. The *\n scroll bar always moves one unit when the arrows are clicked."]
+pub const xpProperty_ScrollBarPageAmount: _bindgen_ty_18 = 1503;
+#[doc = " The type of scrollbar from the enums above."]
+pub const xpProperty_ScrollBarType: _bindgen_ty_18 = 1504;
+#[doc = " Used internally."]
+pub const xpProperty_ScrollBarSlop: _bindgen_ty_18 = 1505;
+#[doc = " Scroll Bar Properties\n"]
+pub type _bindgen_ty_18 = ::std::os::raw::c_int;
+#[doc = " The scroll bar sends this message when the slider position changes. It     *\n sends the message up the call chain; param1 is the scroll bar widget ID."]
+pub const xpMsg_ScrollBarSliderPositionChanged: _bindgen_ty_19 = 1500;
+#[doc = " Scroll Bar Messages\n"]
+pub type _bindgen_ty_19 = ::std::os::raw::c_int;
+#[doc = " This property specifies whether the caption is lit; use lit captions       *\n against screens."]
+pub const xpProperty_CaptionLit: _bindgen_ty_20 = 1600;
+#[doc = " Caption Properties\n"]
+pub type _bindgen_ty_20 = ::std::os::raw::c_int;
+pub const xpShip: _bindgen_ty_21 = 4;
+pub const xpILSGlideScope: _bindgen_ty_21 = 5;
+pub const xpMarkerLeft: _bindgen_ty_21 = 6;
+pub const xp_Airport: _bindgen_ty_21 = 7;
+pub const xpNDB: _bindgen_ty_21 = 8;
+pub const xpVOR: _bindgen_ty_21 = 9;
+pub const xpRadioTower: _bindgen_ty_21 = 10;
+pub const xpAircraftCarrier: _bindgen_ty_21 = 11;
+pub const xpFire: _bindgen_ty_21 = 12;
+pub const xpMarkerRight: _bindgen_ty_21 = 13;
+pub const xpCustomObject: _bindgen_ty_21 = 14;
+pub const xpCoolingTower: _bindgen_ty_21 = 15;
+pub const xpSmokeStack: _bindgen_ty_21 = 16;
+pub const xpBuilding: _bindgen_ty_21 = 17;
+pub const xpPowerLine: _bindgen_ty_21 = 18;
+pub const xpVORWithCompassRose: _bindgen_ty_21 = 19;
+pub const xpOilPlatform: _bindgen_ty_21 = 21;
+pub const xpOilPlatformSmall: _bindgen_ty_21 = 22;
+pub const xpWayPoint: _bindgen_ty_21 = 23;
+#[doc = " General Graphics Types Values\n\n These define the icon for the general graphics.\n"]
+pub type _bindgen_ty_21 = ::std::os::raw::c_int;
+#[doc = " This property controls the type of icon that is drawn."]
+pub const xpProperty_GeneralGraphicsType: _bindgen_ty_22 = 1700;
+#[doc = " General Graphics Properties\n"]
+pub type _bindgen_ty_22 = ::std::os::raw::c_int;
+#[doc = " This is the current value of the progress indicator."]
+pub const xpProperty_ProgressPosition: _bindgen_ty_23 = 1800;
+#[doc = " This is the minimum value, equivalent to 0% filled."]
+pub const xpProperty_ProgressMin: _bindgen_ty_23 = 1801;
+#[doc = " This is the maximum value, equivalent to 100% filled."]
+pub const xpProperty_ProgressMax: _bindgen_ty_23 = 1802;
+#[doc = " Progress Indicator Properties\n"]
+pub type _bindgen_ty_23 = ::std::os::raw::c_int;
+#[doc = " An LCD screen that shows help."]
+pub const xpWindow_Help: _bindgen_ty_24 = 0;
+#[doc = " A dialog box window."]
+pub const xpWindow_MainWindow: _bindgen_ty_24 = 1;
+#[doc = " A panel or frame within a dialog box window."]
+pub const xpWindow_SubWindow: _bindgen_ty_24 = 2;
+#[doc = " An LCD screen within a panel to hold text displays."]
+pub const xpWindow_Screen: _bindgen_ty_24 = 4;
+#[doc = " A list view within a panel for scrolling file names, etc."]
+pub const xpWindow_ListView: _bindgen_ty_24 = 5;
+#[doc = " XPWindowStyle\n\n There are a few built-in window styles in X-Plane that you can use.\n\n Note that X-Plane 6 does not offer real shadow-compositing; you must make\n sure to put a window on top of another window of the right style to make\n the shadows work, etc. This applies to elements with insets and shadows.\n The rules are:\n\n Sub windows must go on top of main windows, and screens and list views on\n top of subwindows. Only help and main windows can be over the main screen.\n\n With X-Plane 7 any window or element may be placed over any other element.\n\n Some windows are scaled by stretching, some by repeating. The drawing\n routines know which scaling method to use. The list view cannot be rescaled\n in X-Plane 6 because it has both a repeating pattern and a gradient in one\n element. All other elements can be rescaled.\n"]
+pub type _bindgen_ty_24 = ::std::os::raw::c_int;
+pub type XPWindowStyle = ::std::os::raw::c_int;
 extern "C" {
-    #[doc = " XPLMFindDataRef\n\n Given a c-style string that names the data ref, this routine looks up the\n actual opaque XPLMDataRef that you use to read and write the data. The\n string names for datarefs are published on the X-Plane SDK web site.\n\n This function returns NULL if the data ref cannot be found.\n\n NOTE: this function is relatively expensive; save the XPLMDataRef this\n function returns for future use. Do not look up your data ref by string\n every time you need to read or write it.\n"]
-    pub fn XPLMFindDataRef(inDataRefName: *const ::std::os::raw::c_char) -> XPLMDataRef;
-}
-extern "C" {
-    #[doc = " XPLMCanWriteDataRef\n\n Given a data ref, this routine returns true if you can successfully set the\n data, false otherwise. Some datarefs are read-only.\n\n NOTE: even if a dataref is marked writable, it may not act writable.  This\n can happen for datarefs that X-Plane writes to on every frame of\n simulation.  In some cases, the dataref is writable but you have to set a\n separate \"override\" dataref to 1 to stop X-Plane from writing it.\n"]
-    pub fn XPLMCanWriteDataRef(inDataRef: XPLMDataRef) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    #[doc = " XPLMIsDataRefGood\n\n This function returns true if the passed in handle is a valid dataref that\n is not orphaned.\n\n Note: there is normally no need to call this function; datarefs returned by\n XPLMFindDataRef remain valid (but possibly orphaned) unless there is a\n complete plugin reload (in which case your plugin is reloaded anyway).\n Orphaned datarefs can be safely read and return 0. Therefore you never need\n to call XPLMIsDataRefGood to 'check' the safety of a dataref.\n (XPLMIsDatarefGood performs some slow checking of the handle validity, so\n it has a perormance cost.)\n"]
-    pub fn XPLMIsDataRefGood(inDataRef: XPLMDataRef) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    #[doc = " XPLMGetDataRefTypes\n\n This routine returns the types of the data ref for accessor use. If a data\n ref is available in multiple data types, the bit-wise OR of these types\n will be returned.\n"]
-    pub fn XPLMGetDataRefTypes(inDataRef: XPLMDataRef) -> XPLMDataTypeID;
-}
-extern "C" {
-    #[doc = " XPLMGetDatai\n\n Read an integer data ref and return its value. The return value is the\n dataref value or 0 if the dataref is NULL or the plugin is disabled.\n"]
-    pub fn XPLMGetDatai(inDataRef: XPLMDataRef) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    #[doc = " XPLMSetDatai\n\n Write a new value to an integer data ref. This routine is a no-op if the\n plugin publishing the dataref is disabled, the dataref is NULL, or the\n dataref is not writable.\n"]
-    pub fn XPLMSetDatai(inDataRef: XPLMDataRef, inValue: ::std::os::raw::c_int);
-}
-extern "C" {
-    #[doc = " XPLMGetDataf\n\n Read a single precision floating point dataref and return its value. The\n return value is the dataref value or 0.0 if the dataref is NULL or the\n plugin is disabled.\n"]
-    pub fn XPLMGetDataf(inDataRef: XPLMDataRef) -> f32;
-}
-extern "C" {
-    #[doc = " XPLMSetDataf\n\n Write a new value to a single precision floating point data ref. This\n routine is a no-op if the plugin publishing the dataref is disabled, the\n dataref is NULL, or the dataref is not writable.\n"]
-    pub fn XPLMSetDataf(inDataRef: XPLMDataRef, inValue: f32);
-}
-extern "C" {
-    #[doc = " XPLMGetDatad\n\n Read a double precision floating point dataref and return its value. The\n return value is the dataref value or 0.0 if the dataref is NULL or the\n plugin is disabled.\n"]
-    pub fn XPLMGetDatad(inDataRef: XPLMDataRef) -> f64;
-}
-extern "C" {
-    #[doc = " XPLMSetDatad\n\n Write a new value to a double precision floating point data ref. This\n routine is a no-op if the plugin publishing the dataref is disabled, the\n dataref is NULL, or the dataref is not writable.\n"]
-    pub fn XPLMSetDatad(inDataRef: XPLMDataRef, inValue: f64);
-}
-extern "C" {
-    #[doc = " XPLMGetDatavi\n\n Read a part of an integer array dataref. If you pass NULL for outValues,\n the routine will return the size of the array, ignoring inOffset and inMax.\n\n If outValues is not NULL, then up to inMax values are copied from the\n dataref into outValues, starting at inOffset in the dataref. If inMax +\n inOffset is larger than the size of the dataref, less than inMax values\n will be copied. The number of values copied is returned.\n\n Note: the semantics of array datarefs are entirely implemented by the\n plugin (or X-Plane) that provides the dataref, not the SDK itself; the\n above description is how these datarefs are intended to work, but a rogue\n plugin may have different behavior.\n"]
-    pub fn XPLMGetDatavi(
-        inDataRef: XPLMDataRef,
-        outValues: *mut ::std::os::raw::c_int,
-        inOffset: ::std::os::raw::c_int,
-        inMax: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    #[doc = " XPLMSetDatavi\n\n Write part or all of an integer array dataref. The values passed by\n inValues are written into the dataref starting at inOffset. Up to inCount\n values are written; however if the values would write \"off the end\" of the\n dataref array, then fewer values are written.\n\n Note: the semantics of array datarefs are entirely implemented by the\n plugin (or X-Plane) that provides the dataref, not the SDK itself; the\n above description is how these datarefs are intended to work, but a rogue\n plugin may have different behavior.\n"]
-    pub fn XPLMSetDatavi(
-        inDataRef: XPLMDataRef,
-        inValues: *mut ::std::os::raw::c_int,
-        inoffset: ::std::os::raw::c_int,
-        inCount: ::std::os::raw::c_int,
+    #[doc = " XPDrawWindow\n\n This routine draws a window of the given dimensions at the given offset on\n the virtual screen in a given style. The window is automatically scaled as\n appropriate using a bitmap scaling technique (scaling or repeating) as\n appropriate to the style.\n"]
+    pub fn XPDrawWindow(
+        inX1: ::std::os::raw::c_int,
+        inY1: ::std::os::raw::c_int,
+        inX2: ::std::os::raw::c_int,
+        inY2: ::std::os::raw::c_int,
+        inStyle: XPWindowStyle,
     );
 }
 extern "C" {
-    #[doc = " XPLMGetDatavf\n\n Read a part of a single precision floating point array dataref. If you pass\n NULL for outVaules, the routine will return the size of the array, ignoring\n inOffset and inMax.\n\n If outValues is not NULL, then up to inMax values are copied from the\n dataref into outValues, starting at inOffset in the dataref. If inMax +\n inOffset is larger than the size of the dataref, less than inMax values\n will be copied. The number of values copied is returned.\n\n Note: the semantics of array datarefs are entirely implemented by the\n plugin (or X-Plane) that provides the dataref, not the SDK itself; the\n above description is how these datarefs are intended to work, but a rogue\n plugin may have different behavior.\n"]
-    pub fn XPLMGetDatavf(
-        inDataRef: XPLMDataRef,
-        outValues: *mut f32,
-        inOffset: ::std::os::raw::c_int,
-        inMax: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    #[doc = " XPGetWindowDefaultDimensions\n\n This routine returns the default dimensions for a window. Output is either\n a minimum or fixed value depending on whether the window is scalable.\n"]
+    pub fn XPGetWindowDefaultDimensions(
+        inStyle: XPWindowStyle,
+        outWidth: *mut ::std::os::raw::c_int,
+        outHeight: *mut ::std::os::raw::c_int,
+    );
 }
+#[doc = " x      metal"]
+pub const xpElement_TextField: _bindgen_ty_25 = 6;
+#[doc = " none     metal"]
+pub const xpElement_CheckBox: _bindgen_ty_25 = 9;
+#[doc = " none     metal"]
+pub const xpElement_CheckBoxLit: _bindgen_ty_25 = 10;
+#[doc = " none     window header"]
+pub const xpElement_WindowCloseBox: _bindgen_ty_25 = 14;
+#[doc = " none     window header"]
+pub const xpElement_WindowCloseBoxPressed: _bindgen_ty_25 = 15;
+#[doc = " x     metal"]
+pub const xpElement_PushButton: _bindgen_ty_25 = 16;
+#[doc = " x     metal"]
+pub const xpElement_PushButtonLit: _bindgen_ty_25 = 17;
+#[doc = " none     any"]
+pub const xpElement_OilPlatform: _bindgen_ty_25 = 24;
+#[doc = " none     any"]
+pub const xpElement_OilPlatformSmall: _bindgen_ty_25 = 25;
+#[doc = " none     any"]
+pub const xpElement_Ship: _bindgen_ty_25 = 26;
+#[doc = " none     any"]
+pub const xpElement_ILSGlideScope: _bindgen_ty_25 = 27;
+#[doc = " none     any"]
+pub const xpElement_MarkerLeft: _bindgen_ty_25 = 28;
+#[doc = " none     any"]
+pub const xpElement_Airport: _bindgen_ty_25 = 29;
+#[doc = " none     any"]
+pub const xpElement_Waypoint: _bindgen_ty_25 = 30;
+#[doc = " none     any"]
+pub const xpElement_NDB: _bindgen_ty_25 = 31;
+#[doc = " none     any"]
+pub const xpElement_VOR: _bindgen_ty_25 = 32;
+#[doc = " none     any"]
+pub const xpElement_RadioTower: _bindgen_ty_25 = 33;
+#[doc = " none     any"]
+pub const xpElement_AircraftCarrier: _bindgen_ty_25 = 34;
+#[doc = " none     any"]
+pub const xpElement_Fire: _bindgen_ty_25 = 35;
+#[doc = " none     any"]
+pub const xpElement_MarkerRight: _bindgen_ty_25 = 36;
+#[doc = " none     any"]
+pub const xpElement_CustomObject: _bindgen_ty_25 = 37;
+#[doc = " none     any"]
+pub const xpElement_CoolingTower: _bindgen_ty_25 = 38;
+#[doc = " none     any"]
+pub const xpElement_SmokeStack: _bindgen_ty_25 = 39;
+#[doc = " none     any"]
+pub const xpElement_Building: _bindgen_ty_25 = 40;
+#[doc = " none     any"]
+pub const xpElement_PowerLine: _bindgen_ty_25 = 41;
+#[doc = " none     metal"]
+pub const xpElement_CopyButtons: _bindgen_ty_25 = 45;
+#[doc = " none     metal"]
+pub const xpElement_CopyButtonsWithEditingGrid: _bindgen_ty_25 = 46;
+#[doc = " x, y     metal"]
+pub const xpElement_EditingGrid: _bindgen_ty_25 = 47;
+#[doc = " THIS CAN PROBABLY BE REMOVED"]
+pub const xpElement_ScrollBar: _bindgen_ty_25 = 48;
+#[doc = " none     any"]
+pub const xpElement_VORWithCompassRose: _bindgen_ty_25 = 49;
+#[doc = " none     metal"]
+pub const xpElement_Zoomer: _bindgen_ty_25 = 51;
+#[doc = " x, y     metal"]
+pub const xpElement_TextFieldMiddle: _bindgen_ty_25 = 52;
+#[doc = " none     metal"]
+pub const xpElement_LittleDownArrow: _bindgen_ty_25 = 53;
+#[doc = " none     metal"]
+pub const xpElement_LittleUpArrow: _bindgen_ty_25 = 54;
+#[doc = " none     metal"]
+pub const xpElement_WindowDragBar: _bindgen_ty_25 = 61;
+#[doc = " none     metal"]
+pub const xpElement_WindowDragBarSmooth: _bindgen_ty_25 = 62;
+#[doc = " XPElementStyle\n\n Elements are individually drawable UI things like push buttons, etc. The\n style defines what kind of element you are drawing. Elements can be\n stretched in one or two dimensions (depending on the element). Some\n elements can be lit.\n\n In X-Plane 6 some elements must be drawn over metal. Some are scalable and\n some are not. Any element can be drawn anywhere in X-Plane 7.\n\n Scalable Axis Required Background\n"]
+pub type _bindgen_ty_25 = ::std::os::raw::c_int;
+pub type XPElementStyle = ::std::os::raw::c_int;
 extern "C" {
-    #[doc = " XPLMSetDatavf\n\n Write part or all of a single precision floating point array dataref. The\n values passed by inValues are written into the dataref starting at\n inOffset. Up to inCount values are written; however if the values would\n write \"off the end\" of the dataref array, then fewer values are written.\n\n Note: the semantics of array datarefs are entirely implemented by the\n plugin (or X-Plane) that provides the dataref, not the SDK itself; the\n above description is how these datarefs are intended to work, but a rogue\n plugin may have different behavior.\n"]
-    pub fn XPLMSetDatavf(
-        inDataRef: XPLMDataRef,
-        inValues: *mut f32,
-        inoffset: ::std::os::raw::c_int,
-        inCount: ::std::os::raw::c_int,
+    #[doc = " XPDrawElement\n\n XPDrawElement draws a given element at an offset on the virtual screen in\n set dimensions. Even if the element is not scalable, it will be scaled if\n the width and height do not match the preferred dimensions; it'll just look\n ugly. Pass inLit to see the lit version of the element; if the element\n cannot be lit this is ignored.\n"]
+    pub fn XPDrawElement(
+        inX1: ::std::os::raw::c_int,
+        inY1: ::std::os::raw::c_int,
+        inX2: ::std::os::raw::c_int,
+        inY2: ::std::os::raw::c_int,
+        inStyle: XPElementStyle,
+        inLit: ::std::os::raw::c_int,
     );
 }
 extern "C" {
-    #[doc = " XPLMGetDatab\n\n Read a part of a byte array dataref. If you pass NULL for outVaules, the\n routine will return the size of the array, ignoring inOffset and inMax.\n\n If outValues is not NULL, then up to inMax values are copied from the\n dataref into outValues, starting at inOffset in the dataref. If inMax +\n inOffset is larger than the size of the dataref, less than inMax values\n will be copied. The number of values copied is returned.\n\n Note: the semantics of array datarefs are entirely implemented by the\n plugin (or X-Plane) that provides the dataref, not the SDK itself; the\n above description is how these datarefs are intended to work, but a rogue\n plugin may have different behavior.\n"]
-    pub fn XPLMGetDatab(
-        inDataRef: XPLMDataRef,
-        outValue: *mut ::std::os::raw::c_void,
-        inOffset: ::std::os::raw::c_int,
-        inMaxBytes: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    #[doc = " XPLMSetDatab\n\n Write part or all of a byte array dataref. The values passed by inValues\n are written into the dataref starting at inOffset. Up to inCount values are\n written; however if the values would write \"off the end\" of the dataref\n array, then fewer values are written.\n\n Note: the semantics of array datarefs are entirely implemented by the\n plugin (or X-Plane) that provides the dataref, not the SDK itself; the\n above description is how these datarefs are intended to work, but a rogue\n plugin may have different behavior.\n"]
-    pub fn XPLMSetDatab(
-        inDataRef: XPLMDataRef,
-        inValue: *mut ::std::os::raw::c_void,
-        inOffset: ::std::os::raw::c_int,
-        inLength: ::std::os::raw::c_int,
+    #[doc = " XPGetElementDefaultDimensions\n\n This routine returns the recommended or minimum dimensions of a given UI\n element. outCanBeLit tells whether the element has both a lit and unlit\n state. Pass NULL to not receive any of these parameters.\n"]
+    pub fn XPGetElementDefaultDimensions(
+        inStyle: XPElementStyle,
+        outWidth: *mut ::std::os::raw::c_int,
+        outHeight: *mut ::std::os::raw::c_int,
+        outCanBeLit: *mut ::std::os::raw::c_int,
     );
 }
-#[doc = " XPLMGetDatai_f\n\n Data provider function pointers.\n\n These define the function pointers you provide to get or set data. Note\n that you are passed a generic pointer for each one. This is the same\n pointer you pass in your register routine; you can use it to locate plugin\n variables, etc.\n\n The semantics of your callbacks are the same as the dataref accessor above\n - basically routines like XPLMGetDatai are just pass-throughs from a caller\n to your plugin. Be particularly mindful in implementing array dataref\n read-write accessors; you are responsible for avoiding overruns, supporting\n offset read/writes, and handling a read with a NULL buffer.\n"]
-pub type XPLMGetDatai_f = ::std::option::Option<
-    unsafe extern "C" fn(inRefcon: *mut ::std::os::raw::c_void) -> ::std::os::raw::c_int,
->;
-#[doc = " XPLMSetDatai_f\n"]
-pub type XPLMSetDatai_f = ::std::option::Option<
-    unsafe extern "C" fn(inRefcon: *mut ::std::os::raw::c_void, inValue: ::std::os::raw::c_int),
->;
-#[doc = " XPLMGetDataf_f\n"]
-pub type XPLMGetDataf_f =
-    ::std::option::Option<unsafe extern "C" fn(inRefcon: *mut ::std::os::raw::c_void) -> f32>;
-#[doc = " XPLMSetDataf_f\n"]
-pub type XPLMSetDataf_f = ::std::option::Option<
-    unsafe extern "C" fn(inRefcon: *mut ::std::os::raw::c_void, inValue: f32),
->;
-#[doc = " XPLMGetDatad_f\n"]
-pub type XPLMGetDatad_f =
-    ::std::option::Option<unsafe extern "C" fn(inRefcon: *mut ::std::os::raw::c_void) -> f64>;
-#[doc = " XPLMSetDatad_f\n"]
-pub type XPLMSetDatad_f = ::std::option::Option<
-    unsafe extern "C" fn(inRefcon: *mut ::std::os::raw::c_void, inValue: f64),
->;
-#[doc = " XPLMGetDatavi_f\n"]
-pub type XPLMGetDatavi_f = ::std::option::Option<
-    unsafe extern "C" fn(
-        inRefcon: *mut ::std::os::raw::c_void,
-        outValues: *mut ::std::os::raw::c_int,
-        inOffset: ::std::os::raw::c_int,
+#[doc = "  not over metal can be lit  can be rotated"]
+pub const xpTrack_ScrollBar: _bindgen_ty_26 = 0;
+#[doc = "  over metal  can be lit  can be rotated"]
+pub const xpTrack_Slider: _bindgen_ty_26 = 1;
+#[doc = "  over metal  cannot be lit cannot be rotated"]
+pub const xpTrack_Progress: _bindgen_ty_26 = 2;
+#[doc = " XPTrackStyle\n\n A track is a UI element that displays a value vertically or horizontally.\n X-Plane has three kinds of tracks: scroll bars, sliders, and progress bars.\n Tracks can be displayed either horizontally or vertically; tracks will\n choose their own layout based on the larger dimension of their dimensions\n (e.g. they know if they are tall or wide). Sliders may be lit or unlit\n (showing the user manipulating them).\n\n - ScrollBar: this is a standard scroll bar with arrows and a thumb to drag.\n - Slider: this is a simple track with a ball in the middle that can be\n   slid.\n - Progress: this is a progress indicator showing how a long task is going.\n"]
+pub type _bindgen_ty_26 = ::std::os::raw::c_int;
+pub type XPTrackStyle = ::std::os::raw::c_int;
+extern "C" {
+    #[doc = " XPDrawTrack\n\n This routine draws a track. You pass in the track dimensions and size; the\n track picks the optimal orientation for these dimensions. Pass in the\n track's minimum current and maximum values; the indicator will be\n positioned appropriately. You can also specify whether the track is lit or\n not.\n"]
+    pub fn XPDrawTrack(
+        inX1: ::std::os::raw::c_int,
+        inY1: ::std::os::raw::c_int,
+        inX2: ::std::os::raw::c_int,
+        inY2: ::std::os::raw::c_int,
+        inMin: ::std::os::raw::c_int,
         inMax: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int,
->;
-#[doc = " XPLMSetDatavi_f\n"]
-pub type XPLMSetDatavi_f = ::std::option::Option<
-    unsafe extern "C" fn(
-        inRefcon: *mut ::std::os::raw::c_void,
-        inValues: *mut ::std::os::raw::c_int,
-        inOffset: ::std::os::raw::c_int,
-        inCount: ::std::os::raw::c_int,
-    ),
->;
-#[doc = " XPLMGetDatavf_f\n"]
-pub type XPLMGetDatavf_f = ::std::option::Option<
-    unsafe extern "C" fn(
-        inRefcon: *mut ::std::os::raw::c_void,
-        outValues: *mut f32,
-        inOffset: ::std::os::raw::c_int,
+        inValue: ::std::os::raw::c_int,
+        inTrackStyle: XPTrackStyle,
+        inLit: ::std::os::raw::c_int,
+    );
+}
+extern "C" {
+    #[doc = " XPGetTrackDefaultDimensions\n\n This routine returns a track's default smaller dimension; all tracks are\n scalable in the larger dimension. It also returns whether a track can be\n lit.\n"]
+    pub fn XPGetTrackDefaultDimensions(
+        inStyle: XPTrackStyle,
+        outWidth: *mut ::std::os::raw::c_int,
+        outCanBeLit: *mut ::std::os::raw::c_int,
+    );
+}
+extern "C" {
+    #[doc = " XPGetTrackMetrics\n\n This routine returns the metrics of a track. If you want to write UI code\n to manipulate a track, this routine helps you know where the mouse\n locations are. For most other elements, the rectangle the element is drawn\n in is enough information. However, the scrollbar drawing routine does some\n automatic placement; this routine lets you know where things ended up. You\n pass almost everything you would pass to the draw routine. You get out the\n orientation, and other useful stuff.\n\n Besides orientation, you get five dimensions for the five parts of a\n scrollbar, which are the down button, down area (area before the thumb),\n the thumb, and the up area and button. For horizontal scrollers, the left\n button decreases; for vertical scrollers, the top button decreases.\n"]
+    pub fn XPGetTrackMetrics(
+        inX1: ::std::os::raw::c_int,
+        inY1: ::std::os::raw::c_int,
+        inX2: ::std::os::raw::c_int,
+        inY2: ::std::os::raw::c_int,
+        inMin: ::std::os::raw::c_int,
         inMax: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int,
->;
-#[doc = " XPLMSetDatavf_f\n"]
-pub type XPLMSetDatavf_f = ::std::option::Option<
-    unsafe extern "C" fn(
-        inRefcon: *mut ::std::os::raw::c_void,
-        inValues: *mut f32,
-        inOffset: ::std::os::raw::c_int,
-        inCount: ::std::os::raw::c_int,
-    ),
->;
-#[doc = " XPLMGetDatab_f\n"]
-pub type XPLMGetDatab_f = ::std::option::Option<
-    unsafe extern "C" fn(
-        inRefcon: *mut ::std::os::raw::c_void,
-        outValue: *mut ::std::os::raw::c_void,
-        inOffset: ::std::os::raw::c_int,
-        inMaxLength: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int,
->;
-#[doc = " XPLMSetDatab_f\n"]
-pub type XPLMSetDatab_f = ::std::option::Option<
-    unsafe extern "C" fn(
-        inRefcon: *mut ::std::os::raw::c_void,
-        inValue: *mut ::std::os::raw::c_void,
-        inOffset: ::std::os::raw::c_int,
-        inLength: ::std::os::raw::c_int,
-    ),
->;
-extern "C" {
-    #[doc = " XPLMRegisterDataAccessor\n\n This routine creates a new item of data that can be read and written. Pass\n in the data's full name for searching, the type(s) of the data for\n accessing, and whether the data can be written to. For each data type you\n support, pass in a read accessor function and a write accessor function if\n necessary. Pass NULL for data types you do not support or write accessors\n if you are read-only.\n\n You are returned a data ref for the new item of data created. You can use\n this data ref to unregister your data later or read or write from it.\n"]
-    pub fn XPLMRegisterDataAccessor(
-        inDataName: *const ::std::os::raw::c_char,
-        inDataType: XPLMDataTypeID,
-        inIsWritable: ::std::os::raw::c_int,
-        inReadInt: XPLMGetDatai_f,
-        inWriteInt: XPLMSetDatai_f,
-        inReadFloat: XPLMGetDataf_f,
-        inWriteFloat: XPLMSetDataf_f,
-        inReadDouble: XPLMGetDatad_f,
-        inWriteDouble: XPLMSetDatad_f,
-        inReadIntArray: XPLMGetDatavi_f,
-        inWriteIntArray: XPLMSetDatavi_f,
-        inReadFloatArray: XPLMGetDatavf_f,
-        inWriteFloatArray: XPLMSetDatavf_f,
-        inReadData: XPLMGetDatab_f,
-        inWriteData: XPLMSetDatab_f,
-        inReadRefcon: *mut ::std::os::raw::c_void,
-        inWriteRefcon: *mut ::std::os::raw::c_void,
-    ) -> XPLMDataRef;
-}
-extern "C" {
-    #[doc = " XPLMUnregisterDataAccessor\n\n Use this routine to unregister any data accessors you may have registered.\n You unregister a data ref by the XPLMDataRef you get back from\n registration. Once you unregister a data ref, your function pointer will\n not be called anymore.\n"]
-    pub fn XPLMUnregisterDataAccessor(inDataRef: XPLMDataRef);
-}
-#[doc = " XPLMDataChanged_f\n\n An XPLMDataChanged_f is a callback that the XPLM calls whenever any other\n plug-in modifies shared data. A refcon you provide is passed back to help\n identify which data is being changed. In response, you may want to call one\n of the XPLMGetDataxxx routines to find the new value of the data.\n"]
-pub type XPLMDataChanged_f =
-    ::std::option::Option<unsafe extern "C" fn(inRefcon: *mut ::std::os::raw::c_void)>;
-extern "C" {
-    #[doc = " XPLMShareData\n\n This routine connects a plug-in to shared data, creating the shared data if\n necessary. inDataName is a standard path for the data ref, and inDataType\n specifies the type. This function will create the data if it does not\n exist. If the data already exists but the type does not match, an error is\n returned, so it is important that plug-in authors collaborate to establish\n public standards for shared data.\n\n If a notificationFunc is passed in and is not NULL, that notification\n function will be called whenever the data is modified. The notification\n refcon will be passed to it. This allows your plug-in to know which shared\n data was changed if multiple shared data are handled by one callback, or if\n the plug-in does not use global variables.\n\n A one is returned for successfully creating or finding the shared data; a\n zero if the data already exists but is of the wrong type.\n"]
-    pub fn XPLMShareData(
-        inDataName: *const ::std::os::raw::c_char,
-        inDataType: XPLMDataTypeID,
-        inNotificationFunc: XPLMDataChanged_f,
-        inNotificationRefcon: *mut ::std::os::raw::c_void,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    #[doc = " XPLMUnshareData\n\n This routine removes your notification function for shared data. Call it\n when done with the data to stop receiving change notifications. Arguments\n must match XPLMShareData. The actual memory will not necessarily be freed,\n since other plug-ins could be using it.\n"]
-    pub fn XPLMUnshareData(
-        inDataName: *const ::std::os::raw::c_char,
-        inDataType: XPLMDataTypeID,
-        inNotificationFunc: XPLMDataChanged_f,
-        inNotificationRefcon: *mut ::std::os::raw::c_void,
-    ) -> ::std::os::raw::c_int;
+        inValue: ::std::os::raw::c_int,
+        inTrackStyle: XPTrackStyle,
+        outIsVertical: *mut ::std::os::raw::c_int,
+        outDownBtnSize: *mut ::std::os::raw::c_int,
+        outDownPageSize: *mut ::std::os::raw::c_int,
+        outThumbSize: *mut ::std::os::raw::c_int,
+        outUpPageSize: *mut ::std::os::raw::c_int,
+        outUpBtnSize: *mut ::std::os::raw::c_int,
+    );
 }
 #[doc = " This is the first phase where you can draw in 2-d."]
-pub const xplm_Phase_FirstCockpit: _bindgen_ty_4 = 35;
+pub const xplm_Phase_FirstCockpit: _bindgen_ty_27 = 35;
 #[doc = " The non-moving parts of the aircraft panel."]
-pub const xplm_Phase_Panel: _bindgen_ty_4 = 40;
+pub const xplm_Phase_Panel: _bindgen_ty_27 = 40;
 #[doc = " The moving parts of the aircraft panel."]
-pub const xplm_Phase_Gauges: _bindgen_ty_4 = 45;
+pub const xplm_Phase_Gauges: _bindgen_ty_27 = 45;
 #[doc = " Floating windows from plugins."]
-pub const xplm_Phase_Window: _bindgen_ty_4 = 50;
+pub const xplm_Phase_Window: _bindgen_ty_27 = 50;
 #[doc = " The last chance to draw in 2d."]
-pub const xplm_Phase_LastCockpit: _bindgen_ty_4 = 55;
+pub const xplm_Phase_LastCockpit: _bindgen_ty_27 = 55;
 #[doc = " Removed as of XPLM300; Use the full-blown XPLMMap API instead."]
-pub const xplm_Phase_LocalMap3D: _bindgen_ty_4 = 100;
+pub const xplm_Phase_LocalMap3D: _bindgen_ty_27 = 100;
 #[doc = " Removed as of XPLM300; Use the full-blown XPLMMap API instead."]
-pub const xplm_Phase_LocalMap2D: _bindgen_ty_4 = 101;
+pub const xplm_Phase_LocalMap2D: _bindgen_ty_27 = 101;
 #[doc = " Removed as of XPLM300; Use the full-blown XPLMMap API instead."]
-pub const xplm_Phase_LocalMapProfile: _bindgen_ty_4 = 102;
+pub const xplm_Phase_LocalMapProfile: _bindgen_ty_27 = 102;
 #[doc = " XPLMDrawingPhase\n\n This constant indicates which part of drawing we are in.  Drawing is done\n from the back to the front.  We get a callback before or after each item.\n Metaphases provide access to the beginning and end of the 3d (scene) and\n 2d (cockpit) drawing in a manner that is independent of new phases added\n  via X-Plane implementation.\n\n **NOTE**: As of XPLM302 the legacy 3D drawing phases (xplm_Phase_FirstScene\n   to xplm_Phase_LastScene) are deprecated. When running under X-Plane 11.50\n   with the modern Vulkan or Metal backend, X-Plane will no longer call\n   these drawing phases. There is a new drawing phase, xplm_Phase_Modern3D,\n   which is supported under OpenGL and Vulkan which is called out roughly\n   where the old before xplm_Phase_Airplanes phase was for blending. This\n   phase is *NOT* supported under Metal and comes with potentially\n   substantial performance overhead. Please do *NOT* opt into this phase if\n   you don't do any actual drawing that requires the depth buffer in some\n   way!\n\n **WARNING**: As X-Plane's scenery evolves, some drawing phases may cease to\n   exist and new ones may be invented.  If you need a particularly specific\n   use of these codes, consult Austin and/or be prepared to revise your code\n   as X-Plane evolves.\n"]
-pub type _bindgen_ty_4 = ::std::os::raw::c_int;
+pub type _bindgen_ty_27 = ::std::os::raw::c_int;
 pub type XPLMDrawingPhase = ::std::os::raw::c_int;
 #[doc = " XPLMDrawCallback_f\n\n This is the prototype for a low level drawing callback.  You are passed in\n the phase and whether it is before or after.  If you are before the phase,\n return 1 to let X-Plane draw or 0 to suppress X-Plane drawing.  If you are\n after the phase the return value is ignored.\n\n Refcon is a unique value that you specify when registering the callback,\n allowing you to slip a pointer to your own data to the callback.\n\n Upon entry the OpenGL context will be correctly set up for you and OpenGL\n will be in 'local' coordinates for 3d drawing and panel coordinates for 2d\n drawing.  The OpenGL state (texturing, etc.) will be unknown.\n"]
 pub type XPLMDrawCallback_f = ::std::option::Option<
@@ -635,7 +923,7 @@ pub type XPLMWindowID = *mut ::std::os::raw::c_void;
 pub type XPLMDrawWindow_f = ::std::option::Option<
     unsafe extern "C" fn(inWindowID: XPLMWindowID, inRefcon: *mut ::std::os::raw::c_void),
 >;
-#[doc = " XPLMHandleKey_f\n\n This function is called when a key is pressed or keyboard focus is taken\n away from your window.  If losingFocus is 1, you are losing the keyboard\n focus, otherwise a key was pressed and inKey contains its character.  You\n are also passed your window and a refcon.\n\n Warning: this API declares virtual keys as a signed character; however the\n VKEY #define macros in XPLMDefs.h define the vkeys using unsigned values\n (that is 0x80 instead of -0x80).  So you may need to cast the incoming vkey\n to an unsigned char to get correct comparisons in C.\n"]
+#[doc = " XPLMHandleKey_f\n\n This function is called when a key is pressed or keyboard focus is taken\n away from your window.  If losingFocus is 1, you are losing the keyboard\n focus, otherwise a key was pressed and inKey contains its character.\n\n The window ID passed in will be your window for key presses, or the other\n window taking focus  when losing focus. Note that in the modern plugin\n system, often focus is taken by the window manager itself; for this resaon,\n the window ID may be zero when losing focus, and you should not write code\n that depends onit.\n\n The refcon passed in will be the one from registration, for both key\n presses and losing focus.\n\n Warning: this API declares virtual keys as a signed character; however the\n VKEY #define macros in XPLMDefs.h define the vkeys using unsigned values\n (that is 0x80 instead of -0x80).  So you may need to cast the incoming vkey\n to an unsigned char to get correct comparisons in C.\n"]
 pub type XPLMHandleKey_f = ::std::option::Option<
     unsafe extern "C" fn(
         inWindowID: XPLMWindowID,
@@ -646,11 +934,11 @@ pub type XPLMHandleKey_f = ::std::option::Option<
         losingFocus: ::std::os::raw::c_int,
     ),
 >;
-pub const xplm_MouseDown: _bindgen_ty_5 = 1;
-pub const xplm_MouseDrag: _bindgen_ty_5 = 2;
-pub const xplm_MouseUp: _bindgen_ty_5 = 3;
+pub const xplm_MouseDown: _bindgen_ty_28 = 1;
+pub const xplm_MouseDrag: _bindgen_ty_28 = 2;
+pub const xplm_MouseUp: _bindgen_ty_28 = 3;
 #[doc = " XPLMMouseStatus\n\n When the mouse is clicked, your mouse click routine is called repeatedly.\n It is first called with the mouse down message.  It is then called zero or\n more times with the mouse-drag message, and finally it is called once with\n the mouse up message.  All of these messages will be directed to the same\n window; you are guaranteed to not receive a drag or mouse-up event without\n first receiving the corresponding mouse-down.\n"]
-pub type _bindgen_ty_5 = ::std::os::raw::c_int;
+pub type _bindgen_ty_28 = ::std::os::raw::c_int;
 pub type XPLMMouseStatus = ::std::os::raw::c_int;
 #[doc = " XPLMHandleMouseClick_f\n\n You receive this call for one of three events:\n\n - when the user clicks the mouse button down\n - (optionally) when the user drags the mouse after a down-click, but before\n   the up-click\n - when the user releases the down-clicked mouse button.\n\n You receive the x and y of the click, your window, and a refcon.  Return 1\n to consume the click, or 0 to pass it through.\n\n WARNING: passing clicks through windows (as of this writing) causes mouse\n tracking problems in X-Plane; do not use this feature!\n\n The units for x and y values match the units used in your window. Thus, for\n \"modern\" windows (those created via XPLMCreateWindowEx() and compiled\n against the XPLM300 library), the units are boxels, while legacy windows\n will get pixels. Legacy windows have their origin in the lower left of the\n main X-Plane window, while modern windows have their origin in the lower\n left of the global desktop space. In both cases, x increases as you move\n right, and y increases as you move up.\n"]
 pub type XPLMHandleMouseClick_f = ::std::option::Option<
@@ -663,15 +951,15 @@ pub type XPLMHandleMouseClick_f = ::std::option::Option<
     ) -> ::std::os::raw::c_int,
 >;
 #[doc = " X-Plane manages the cursor normally, plugin does not affect the cusrsor."]
-pub const xplm_CursorDefault: _bindgen_ty_6 = 0;
+pub const xplm_CursorDefault: _bindgen_ty_29 = 0;
 #[doc = " X-Plane hides the cursor."]
-pub const xplm_CursorHidden: _bindgen_ty_6 = 1;
+pub const xplm_CursorHidden: _bindgen_ty_29 = 1;
 #[doc = " X-Plane shows the cursor as the default arrow."]
-pub const xplm_CursorArrow: _bindgen_ty_6 = 2;
+pub const xplm_CursorArrow: _bindgen_ty_29 = 2;
 #[doc = " X-Plane shows the cursor but lets you select an OS cursor."]
-pub const xplm_CursorCustom: _bindgen_ty_6 = 3;
+pub const xplm_CursorCustom: _bindgen_ty_29 = 3;
 #[doc = " XPLMCursorStatus\n\n XPLMCursorStatus describes how you would like X-Plane to manage the cursor.\n See XPLMHandleCursor_f for more info.\n"]
-pub type _bindgen_ty_6 = ::std::os::raw::c_int;
+pub type _bindgen_ty_29 = ::std::os::raw::c_int;
 pub type XPLMCursorStatus = ::std::os::raw::c_int;
 #[doc = " XPLMHandleCursor_f\n\n The SDK calls your cursor status callback when the mouse is over your\n plugin window.  Return a cursor status code to indicate how you would like\n X-Plane to manage the cursor.  If you return xplm_CursorDefault, the SDK\n will try lower-Z-order plugin windows, then let the sim manage the cursor.\n\n Note: you should never show or hide the cursor yourself---these APIs are\n typically reference-counted and thus cannot safely and predictably be used\n by the SDK.  Instead return one of xplm_CursorHidden to hide the cursor or\n xplm_CursorArrow/xplm_CursorCustom to show the cursor.\n\n If you want to implement a custom cursor by drawing a cursor in OpenGL, use\n xplm_CursorHidden to hide the OS cursor and draw the cursor using a 2-d\n drawing callback (after xplm_Phase_Window is probably a good choice, but\n see deprecation warnings on the drawing APIs!).  If you want to use a\n custom OS-based cursor, use xplm_CursorCustom to ask X-Plane to show the\n cursor but not affect its image.  You can then use an OS specific call like\n SetThemeCursor (Mac) or SetCursor/LoadCursor (Windows).\n\n The units for x and y values match the units used in your window. Thus, for\n \"modern\" windows (those created via XPLMCreateWindowEx() and compiled\n against the XPLM300 library), the units are boxels, while legacy windows\n will get pixels. Legacy windows have their origin in the lower left of the\n main X-Plane window, while modern windows have their origin in the lower\n left of the global desktop space. In both cases, x increases as you move\n right, and y increases as you move up.\n"]
 pub type XPLMHandleCursor_f = ::std::option::Option<
@@ -694,26 +982,26 @@ pub type XPLMHandleMouseWheel_f = ::std::option::Option<
     ) -> ::std::os::raw::c_int,
 >;
 #[doc = " The lowest layer, used for HUD-like displays while flying."]
-pub const xplm_WindowLayerFlightOverlay: _bindgen_ty_7 = 0;
+pub const xplm_WindowLayerFlightOverlay: _bindgen_ty_30 = 0;
 #[doc = " Windows that \"float\" over the sim, like the X-Plane 11 map does. If you are*\n not sure which layer to create your window in, choose floating."]
-pub const xplm_WindowLayerFloatingWindows: _bindgen_ty_7 = 1;
+pub const xplm_WindowLayerFloatingWindows: _bindgen_ty_30 = 1;
 #[doc = " An interruptive modal that covers the sim with a transparent black overlay *\n to draw the user's focus to the alert"]
-pub const xplm_WindowLayerModal: _bindgen_ty_7 = 2;
+pub const xplm_WindowLayerModal: _bindgen_ty_30 = 2;
 #[doc = " \"Growl\"-style notifications that are visible in a corner of the screen,    *\n even over modals"]
-pub const xplm_WindowLayerGrowlNotifications: _bindgen_ty_7 = 3;
+pub const xplm_WindowLayerGrowlNotifications: _bindgen_ty_30 = 3;
 #[doc = " XPLMWindowLayer\n\n XPLMWindowLayer describes where in the ordering of windows X-Plane should\n place a particular window. Windows in higher layers cover windows in lower\n layers. So, a given window might be at the top of its particular layer, but\n it might still be obscured by a window in a higher layer. (This happens\n frequently when floating windows, like X-Plane's map, are covered by a\n modal alert.)\n\n Your window's layer can only be specified when you create the window (in\n the XPLMCreateWindow_t you pass to XPLMCreateWindowEx()). For this reason,\n layering only applies to windows created with new X-Plane 11 GUI features.\n (Windows created using the older XPLMCreateWindow(), or windows compiled\n against a pre-XPLM300 version of the SDK will simply be placed in the\n flight overlay window layer.)\n"]
-pub type _bindgen_ty_7 = ::std::os::raw::c_int;
+pub type _bindgen_ty_30 = ::std::os::raw::c_int;
 pub type XPLMWindowLayer = ::std::os::raw::c_int;
 #[doc = " X-Plane will draw no decoration for your window, and apply no automatic    *\n click handlers. The window will not stop click from passing through its    *\n bounds. This is suitable for \"windows\" which request, say, the full screen *\n bounds, then only draw in a small portion of the available area."]
-pub const xplm_WindowDecorationNone: _bindgen_ty_8 = 0;
+pub const xplm_WindowDecorationNone: _bindgen_ty_31 = 0;
 #[doc = " The default decoration for \"native\" windows, like the map. Provides a solid*\n background, as well as click handlers for resizing and dragging the window."]
-pub const xplm_WindowDecorationRoundRectangle: _bindgen_ty_8 = 1;
+pub const xplm_WindowDecorationRoundRectangle: _bindgen_ty_31 = 1;
 #[doc = " X-Plane will draw no decoration for your window, nor will it provide resize*\n handlers for your window edges, but it will stop clicks from passing       *\n through your windows bounds."]
-pub const xplm_WindowDecorationSelfDecorated: _bindgen_ty_8 = 2;
+pub const xplm_WindowDecorationSelfDecorated: _bindgen_ty_31 = 2;
 #[doc = " Like self-decorated, but with resizing; X-Plane will draw no decoration for*\n your window, but it will stop clicks from passing through your windows     *\n bounds, and provide automatic mouse handlers for resizing."]
-pub const xplm_WindowDecorationSelfDecoratedResizable: _bindgen_ty_8 = 3;
+pub const xplm_WindowDecorationSelfDecoratedResizable: _bindgen_ty_31 = 3;
 #[doc = " XPLMWindowDecoration\n\n XPLMWindowDecoration describes how \"modern\" windows will be displayed. This\n impacts both how X-Plane draws your window as well as certain mouse\n handlers.\n\n Your window's decoration can only be specified when you create the window\n (in the XPLMCreateWindow_t you pass to XPLMCreateWindowEx()).\n"]
-pub type _bindgen_ty_8 = ::std::os::raw::c_int;
+pub type _bindgen_ty_31 = ::std::os::raw::c_int;
 pub type XPLMWindowDecoration = ::std::os::raw::c_int;
 #[doc = " XPLMCreateWindow_t\n\n The XPMCreateWindow_t structure defines all of the parameters used to\n create a modern window using XPLMCreateWindowEx().  The structure will be\n expanded in future SDK APIs to include more features.  Always set the\n structSize member to the size of your struct in bytes!\n\n All windows created by this function in the XPLM300 version of the API are\n created with the new X-Plane 11 GUI features. This means your plugin will\n get to \"know\" about the existence of X-Plane windows other than the main\n window. All drawing and mouse callbacks for your window will occur in\n \"boxels,\" giving your windows automatic support for high-DPI scaling in\n X-Plane. In addition, your windows can opt-in to decoration with the\n X-Plane 11 window styling, and you can use the\n XPLMSetWindowPositioningMode() API to make your window \"popped out\" into a\n first-class operating system window.\n\n Note that this requires dealing with your window's bounds in \"global\n desktop\" positioning units, rather than the traditional panel coordinate\n system. In global desktop coordinates, the main X-Plane window may not have\n its origin at coordinate (0, 0), and your own window may have negative\n coordinates. Assuming you don't implicitly assume (0, 0) as your origin,\n the only API change you should need is to start using\n XPLMGetMouseLocationGlobal() rather than XPLMGetMouseLocation(), and\n XPLMGetScreenBoundsGlobal() instead of XPLMGetScreenSize().\n\n If you ask to be decorated as a floating window, you'll get the blue window\n control bar and blue backing that you see in X-Plane 11's normal \"floating\"\n windows (like the map).\n"]
 #[repr(C)]
@@ -1087,19 +1375,19 @@ extern "C" {
     );
 }
 #[doc = " The default positioning mode. Set the window geometry and its future       *\n position will be determined by its window gravity, resizing limits, and    *\n user interactions."]
-pub const xplm_WindowPositionFree: _bindgen_ty_9 = 0;
+pub const xplm_WindowPositionFree: _bindgen_ty_32 = 0;
 #[doc = " Keep the window centered on the monitor you specify"]
-pub const xplm_WindowCenterOnMonitor: _bindgen_ty_9 = 1;
+pub const xplm_WindowCenterOnMonitor: _bindgen_ty_32 = 1;
 #[doc = " Keep the window full screen on the monitor you specify"]
-pub const xplm_WindowFullScreenOnMonitor: _bindgen_ty_9 = 2;
+pub const xplm_WindowFullScreenOnMonitor: _bindgen_ty_32 = 2;
 #[doc = " Like gui_window_full_screen_on_monitor, but stretches over *all* monitors  *\n and popout windows. This is an obscure one... unless you have a very good  *\n reason to need it, you probably don't!"]
-pub const xplm_WindowFullScreenOnAllMonitors: _bindgen_ty_9 = 3;
+pub const xplm_WindowFullScreenOnAllMonitors: _bindgen_ty_32 = 3;
 #[doc = " A first-class window in the operating system, completely separate from the *\n X-Plane window(s)"]
-pub const xplm_WindowPopOut: _bindgen_ty_9 = 4;
+pub const xplm_WindowPopOut: _bindgen_ty_32 = 4;
 #[doc = " A floating window visible on the VR headset"]
-pub const xplm_WindowVR: _bindgen_ty_9 = 5;
+pub const xplm_WindowVR: _bindgen_ty_32 = 5;
 #[doc = " XPLMWindowPositioningMode\n\n XPLMWindowPositionMode describes how X-Plane will position your window on\n the user's screen. X-Plane will maintain this positioning mode even as the\n user resizes their window or adds/removes full-screen monitors.\n\n Positioning mode can only be set for \"modern\" windows (that is, windows\n created using XPLMCreateWindowEx() and compiled against the XPLM300 SDK).\n Windows created using the deprecated XPLMCreateWindow(), or windows\n compiled against a pre-XPLM300 version of the SDK will simply get the\n \"free\" positioning mode.\n"]
-pub type _bindgen_ty_9 = ::std::os::raw::c_int;
+pub type _bindgen_ty_32 = ::std::os::raw::c_int;
 pub type XPLMWindowPositioningMode = ::std::os::raw::c_int;
 extern "C" {
     #[doc = " XPLMSetWindowPositioningMode\n\n Sets the policy for how X-Plane will position your window.\n\n Some positioning modes apply to a particular monitor. For those modes, you\n can pass a negative monitor index to position the window on the main\n X-Plane monitor (the screen with the X-Plane menu bar at the top). Or, if\n you have a specific monitor you want to position your window on, you can\n pass a real monitor index as received from, e.g.,\n XPLMGetAllMonitorBoundsOS().\n\n Only applies to modern windows. (Windows created using the deprecated\n XPLMCreateWindow(), or windows compiled against a pre-XPLM300 version of\n the SDK will always use xplm_WindowPositionFree.)\n"]
@@ -1210,13 +1498,737 @@ extern "C" {
         inFlags: XPLMKeyFlags,
     );
 }
+extern "C" {
+    #[doc = " XPCreateWidget\n\n This function creates a new widget and returns the new widget's ID to you.\n If the widget creation fails for some reason, it returns NULL. Widget\n creation will fail either if you pass a bad class ID or if there is not\n adequate memory.\n\n Input Parameters:\n\n - Top, left, bottom, and right in global screen coordinates defining the\n   widget's location on the screen.\n - inVisible is 1 if the widget should be drawn, 0 to start the widget as\n   hidden.\n - inDescriptor is a null terminated string that will become the widget's\n   descriptor.\n - inIsRoot is 1 if this is going to be a root widget, 0 if it will not be.\n - inContainer is the ID of this widget's container. It must be 0 for a root\n   widget. For a non-root widget, pass the widget ID of the widget to place\n   this widget within. If this widget is not going to start inside another\n   widget, pass 0; this new widget will be created but will not be drawn\n   until it is placed inside another widget.\n - inClass is the class of the widget to draw. Use one of the predefined\n   class-IDs to create a standard widget.\n\n A note on widget embedding: a widget is only called (and will be drawn,\n etc.) if it is placed within a widget that will be called. Root widgets are\n always called. So it is possible to have whole chains of widgets that are\n simply not called. You can preconstruct widget trees and then place them\n into root widgets later to activate them if you wish.\n"]
+    pub fn XPCreateWidget(
+        inLeft: ::std::os::raw::c_int,
+        inTop: ::std::os::raw::c_int,
+        inRight: ::std::os::raw::c_int,
+        inBottom: ::std::os::raw::c_int,
+        inVisible: ::std::os::raw::c_int,
+        inDescriptor: *const ::std::os::raw::c_char,
+        inIsRoot: ::std::os::raw::c_int,
+        inContainer: XPWidgetID,
+        inClass: XPWidgetClass,
+    ) -> XPWidgetID;
+}
+extern "C" {
+    #[doc = " XPCreateCustomWidget\n\n This function is the same as XPCreateWidget except that instead of passing\n a class ID, you pass your widget callback function pointer defining the\n widget. Use this function to define a custom widget. All parameters are the\n same as XPCreateWidget, except that the widget class has been replaced with\n the widget function.\n"]
+    pub fn XPCreateCustomWidget(
+        inLeft: ::std::os::raw::c_int,
+        inTop: ::std::os::raw::c_int,
+        inRight: ::std::os::raw::c_int,
+        inBottom: ::std::os::raw::c_int,
+        inVisible: ::std::os::raw::c_int,
+        inDescriptor: *const ::std::os::raw::c_char,
+        inIsRoot: ::std::os::raw::c_int,
+        inContainer: XPWidgetID,
+        inCallback: XPWidgetFunc_t,
+    ) -> XPWidgetID;
+}
+extern "C" {
+    #[doc = " XPDestroyWidget\n\n This class destroys a widget. Pass in the ID of the widget to kill. If you\n pass 1 for inDestroyChilren, the widget's children will be destroyed first,\n then this widget will be destroyed. (Furthermore, the widget's children\n will be destroyed with the inDestroyChildren flag set to 1, so the\n destruction will recurse down the widget tree.) If you pass 0 for this\n flag, direct child widgets will simply end up with their parent set to 0.\n"]
+    pub fn XPDestroyWidget(inWidget: XPWidgetID, inDestroyChildren: ::std::os::raw::c_int);
+}
+extern "C" {
+    #[doc = " XPSendMessageToWidget\n\n This sends any message to a widget. You should probably not go around\n simulating the predefined messages that the widgets library defines for\n you. You may however define custom messages for your widgets and send them\n with this method.\n\n This method supports several dispatching patterns; see XPDispatchMode for\n more info. The function returns 1 if the message was handled, 0 if it was\n not.\n\n For each widget that receives the message (see the dispatching modes), each\n widget function from the most recently installed to the oldest one receives\n the message in order until it is handled.\n"]
+    pub fn XPSendMessageToWidget(
+        inWidget: XPWidgetID,
+        inMessage: XPWidgetMessage,
+        inMode: XPDispatchMode,
+        inParam1: isize,
+        inParam2: isize,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    #[doc = " XPPlaceWidgetWithin\n\n This function changes which container a widget resides in. You may NOT use\n this function on a root widget! inSubWidget is the widget that will be\n moved. Pass a widget ID in inContainer to make inSubWidget be a child of\n inContainer. It will become the last/closest widget in the container. Pass\n 0 to remove the widget from any container. Any call to this other than\n passing the widget ID of the old parent of the affected widget will cause\n the widget to be removed from its old parent. Placing a widget within its\n own parent simply makes it the last widget.\n\n NOTE: this routine does not reposition the sub widget in global\n coordinates. If the container has layout management code, it will\n reposition the subwidget for you, otherwise you must do it with\n SetWidgetGeometry.\n"]
+    pub fn XPPlaceWidgetWithin(inSubWidget: XPWidgetID, inContainer: XPWidgetID);
+}
+extern "C" {
+    #[doc = " XPCountChildWidgets\n\n This routine returns the number of widgets another widget contains.\n"]
+    pub fn XPCountChildWidgets(inWidget: XPWidgetID) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    #[doc = " XPGetNthChildWidget\n\n This routine returns the widget ID of a child widget by index. Indexes are\n 0 based, from 0 to the number of widgets in the parentone minus one,\n inclusive. If the index is invalid, 0 is returned.\n"]
+    pub fn XPGetNthChildWidget(inWidget: XPWidgetID, inIndex: ::std::os::raw::c_int) -> XPWidgetID;
+}
+extern "C" {
+    #[doc = " XPGetParentWidget\n\n Returns the parent of a widget, or 0 if the widget has no parent. Root\n widgets never have parents and therefore always return 0.\n"]
+    pub fn XPGetParentWidget(inWidget: XPWidgetID) -> XPWidgetID;
+}
+extern "C" {
+    #[doc = " XPShowWidget\n\n This routine makes a widget visible if it is not already. Note that if a\n widget is not in a rooted widget hierarchy or one of its parents is not\n visible, it will still not be visible to the user.\n"]
+    pub fn XPShowWidget(inWidget: XPWidgetID);
+}
+extern "C" {
+    #[doc = " XPHideWidget\n\n Makes a widget invisible. See XPShowWidget for considerations of when a\n widget might not be visible despite its own visibility state.\n"]
+    pub fn XPHideWidget(inWidget: XPWidgetID);
+}
+extern "C" {
+    #[doc = " XPIsWidgetVisible\n\n This returns 1 if a widget is visible, 0 if it is not. Note that this\n routine takes into consideration whether a parent is invisible. Use this\n routine to tell if the user can see the widget.\n"]
+    pub fn XPIsWidgetVisible(inWidget: XPWidgetID) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    #[doc = " XPFindRootWidget\n\n Returns the Widget ID of the root widget that contains the passed in widget\n or NULL if the passed in widget is not in a rooted hierarchy.\n"]
+    pub fn XPFindRootWidget(inWidget: XPWidgetID) -> XPWidgetID;
+}
+extern "C" {
+    #[doc = " XPBringRootWidgetToFront\n\n This routine makes the specified widget be in the frontmost widget\n hierarchy. If this widget is a root widget, its widget hierarchy comes to\n front, otherwise the widget's root is brought to the front. If this widget\n is not in an active widget hiearchy (e.g. there is no root widget at the\n top of the tree), this routine does nothing.\n"]
+    pub fn XPBringRootWidgetToFront(inWidget: XPWidgetID);
+}
+extern "C" {
+    #[doc = " XPIsWidgetInFront\n\n This routine returns true if this widget's hierarchy is the frontmost\n hierarchy. It returns false if the widget's hierarchy is not in front, or\n if the widget is not in a rooted hierarchy.\n"]
+    pub fn XPIsWidgetInFront(inWidget: XPWidgetID) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    #[doc = " XPGetWidgetGeometry\n\n This routine returns the bounding box of a widget in global coordinates.\n Pass NULL for any parameter you are not interested in.\n"]
+    pub fn XPGetWidgetGeometry(
+        inWidget: XPWidgetID,
+        outLeft: *mut ::std::os::raw::c_int,
+        outTop: *mut ::std::os::raw::c_int,
+        outRight: *mut ::std::os::raw::c_int,
+        outBottom: *mut ::std::os::raw::c_int,
+    );
+}
+extern "C" {
+    #[doc = " XPSetWidgetGeometry\n\n This function changes the bounding box of a widget.\n"]
+    pub fn XPSetWidgetGeometry(
+        inWidget: XPWidgetID,
+        inLeft: ::std::os::raw::c_int,
+        inTop: ::std::os::raw::c_int,
+        inRight: ::std::os::raw::c_int,
+        inBottom: ::std::os::raw::c_int,
+    );
+}
+extern "C" {
+    #[doc = " XPGetWidgetForLocation\n\n Given a widget and a location, this routine returns the widget ID of the\n child of that widget that owns that location. If inRecursive is true then\n this will return a child of a child of a widget as it tries to find the\n deepest widget at that location. If inVisibleOnly is true, then only\n visible widgets are considered, otherwise all widgets are considered. The\n widget ID passed for inContainer will be returned if the location is in\n that widget but not in a child widget. 0 is returned if the location is not\n in the container.\n\n NOTE: if a widget's geometry extends outside its parents geometry, it will\n not be returned by this call for mouse locations outside the parent\n geometry. The parent geometry limits the child's eligibility for mouse\n location.\n"]
+    pub fn XPGetWidgetForLocation(
+        inContainer: XPWidgetID,
+        inXOffset: ::std::os::raw::c_int,
+        inYOffset: ::std::os::raw::c_int,
+        inRecursive: ::std::os::raw::c_int,
+        inVisibleOnly: ::std::os::raw::c_int,
+    ) -> XPWidgetID;
+}
+extern "C" {
+    #[doc = " XPGetWidgetExposedGeometry\n\n This routine returns the bounds of the area of a widget that is completely\n within its parent widgets. Since a widget's bounding box can be outside its\n parent, part of its area will not be eligible for mouse clicks and should\n not draw. Use XPGetWidgetGeometry to find out what area defines your\n widget's shape, but use this routine to find out what area to actually draw\n into. Note that the widget library does not use OpenGL clipping to keep\n frame rates up, although you could use it internally.\n"]
+    pub fn XPGetWidgetExposedGeometry(
+        inWidgetID: XPWidgetID,
+        outLeft: *mut ::std::os::raw::c_int,
+        outTop: *mut ::std::os::raw::c_int,
+        outRight: *mut ::std::os::raw::c_int,
+        outBottom: *mut ::std::os::raw::c_int,
+    );
+}
+extern "C" {
+    #[doc = " XPSetWidgetDescriptor\n\n Every widget has a descriptor, which is a text string. What the text string\n is used for varies from widget to widget; for example, a push button's text\n is its descriptor, a caption shows its descriptor, and a text field's\n descriptor is the text being edited. In other words, the usage for the text\n varies from widget to widget, but this API provides a universal and\n convenient way to get at it. While not all UI widgets need their\n descriptor, many do.\n"]
+    pub fn XPSetWidgetDescriptor(inWidget: XPWidgetID, inDescriptor: *const ::std::os::raw::c_char);
+}
+extern "C" {
+    #[doc = " XPGetWidgetDescriptor\n\n This routine returns the widget's descriptor. Pass in the length of the\n buffer you are going to receive the descriptor in. The descriptor will be\n null terminated for you. This routine returns the length of the actual\n descriptor; if you pass NULL for outDescriptor, you can get the\n descriptor's length without getting its text. If the length of the\n descriptor exceeds your buffer length, the buffer will not be null\n terminated (this routine has 'strncpy' semantics).\n"]
+    pub fn XPGetWidgetDescriptor(
+        inWidget: XPWidgetID,
+        outDescriptor: *mut ::std::os::raw::c_char,
+        inMaxDescLength: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    #[doc = " XPGetWidgetUnderlyingWindow\n\n Returns the window (from the XPLMDisplay API) that backs your widget\n window. If you have opted in to modern windows, via a call to\n XPLMEnableFeature(\"XPLM_USE_NATIVE_WIDGET_WINDOWS\", 1), you can use the\n returned window ID for display APIs like XPLMSetWindowPositioningMode(),\n allowing you to pop the widget window out into a real OS window, or move it\n into VR.\n"]
+    pub fn XPGetWidgetUnderlyingWindow(inWidget: XPWidgetID) -> XPLMWindowID;
+}
+extern "C" {
+    #[doc = " XPSetWidgetProperty\n\n This function sets a widget's property. Properties are arbitrary values\n associated by a widget by ID.\n"]
+    pub fn XPSetWidgetProperty(
+        inWidget: XPWidgetID,
+        inProperty: XPWidgetPropertyID,
+        inValue: isize,
+    );
+}
+extern "C" {
+    #[doc = " XPGetWidgetProperty\n\n This routine returns the value of a widget's property, or 0 if the property\n is not defined. If you need to know whether the property is defined, pass a\n pointer to an int for inExists; the existence of that property will be\n returned in the int. Pass NULL for inExists if you do not need this\n information.\n"]
+    pub fn XPGetWidgetProperty(
+        inWidget: XPWidgetID,
+        inProperty: XPWidgetPropertyID,
+        inExists: *mut ::std::os::raw::c_int,
+    ) -> isize;
+}
+extern "C" {
+    #[doc = " XPSetKeyboardFocus\n\n Controls which widget will receive keystrokes. Pass the widget ID of the\n widget to get the keys. Note that if the widget does not care about\n keystrokes, they will go to the parent widget, and if no widget cares about\n them, they go to X-Plane.\n\n If you set the keyboard focus to widget ID 0, X-Plane gets keyboard focus.\n\n This routine returns the widget ID that ended up with keyboard focus, or 0\n for X-Plane.\n\n Keyboard focus is not changed if the new widget will not accept it. For\n setting to X-Plane, keyboard focus is always accepted.\n"]
+    pub fn XPSetKeyboardFocus(inWidget: XPWidgetID) -> XPWidgetID;
+}
+extern "C" {
+    #[doc = " XPLoseKeyboardFocus\n\n This causes the specified widget to lose focus; focus is passed to its\n parent, or the next parent that will accept it. This routine does nothing\n if this widget does not have focus.\n"]
+    pub fn XPLoseKeyboardFocus(inWidget: XPWidgetID);
+}
+extern "C" {
+    #[doc = " XPGetWidgetWithFocus\n\n This routine returns the widget that has keyboard focus, or 0 if X-Plane\n has keyboard focus or some other plugin window that does not have widgets\n has focus.\n"]
+    pub fn XPGetWidgetWithFocus() -> XPWidgetID;
+}
+extern "C" {
+    #[doc = " XPAddWidgetCallback\n\n This function adds a new widget callback to a widget. This widget callback\n supercedes any existing ones and will receive messages first; if it does\n not handle messages they will go on to be handled by pre-existing widgets.\n\n The widget function will remain on the widget for the life of the widget.\n The creation message will be sent to the new callback immediately with the\n widget ID, and the destruction message will be sent before the other widget\n function receives a destruction message.\n\n This provides a way to 'subclass' an existing widget. By providing a second\n hook that only handles certain widget messages, you can customize or extend\n widget behavior.\n"]
+    pub fn XPAddWidgetCallback(inWidget: XPWidgetID, inNewCallback: XPWidgetFunc_t);
+}
+extern "C" {
+    #[doc = " XPGetWidgetClassFunc\n\n Given a widget class, this function returns the callbacks that power that\n widget class.\n"]
+    pub fn XPGetWidgetClassFunc(inWidgetClass: XPWidgetClass) -> XPWidgetFunc_t;
+}
+#[doc = " XPWidgetCreate_t\n\n This structure contains all of the parameters needed to create a widget. It\n is used with XPUCreateWidgets to create widgets in bulk from an array. All\n parameters correspond to those of XPCreateWidget except for the container\n index.\n\n If the container index is equal to the index of a widget in the array, the\n widget in the array passed to XPUCreateWidgets is used as the parent of\n this widget. Note that if you pass an index greater than your own position\n in the array, the parent you are requesting will not exist yet.\n\n If the container index is NO_PARENT, the parent widget is specified as\n NULL. If the container index is PARAM_PARENT, the widget passed into\n XPUCreateWidgets is used.\n"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct XPWidgetCreate_t {
+    pub left: ::std::os::raw::c_int,
+    pub top: ::std::os::raw::c_int,
+    pub right: ::std::os::raw::c_int,
+    pub bottom: ::std::os::raw::c_int,
+    pub visible: ::std::os::raw::c_int,
+    pub descriptor: *const ::std::os::raw::c_char,
+    #[doc = " Whether this widget is a root widget"]
+    pub isRoot: ::std::os::raw::c_int,
+    #[doc = " The index of the widget to be contained within, or a constant"]
+    pub containerIndex: ::std::os::raw::c_int,
+    pub widgetClass: XPWidgetClass,
+}
+#[test]
+fn bindgen_test_layout_XPWidgetCreate_t() {
+    const UNINIT: ::std::mem::MaybeUninit<XPWidgetCreate_t> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<XPWidgetCreate_t>(),
+        48usize,
+        concat!("Size of: ", stringify!(XPWidgetCreate_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<XPWidgetCreate_t>(),
+        8usize,
+        concat!("Alignment of ", stringify!(XPWidgetCreate_t))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).left) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(XPWidgetCreate_t),
+            "::",
+            stringify!(left)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).top) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(XPWidgetCreate_t),
+            "::",
+            stringify!(top)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).right) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(XPWidgetCreate_t),
+            "::",
+            stringify!(right)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).bottom) as usize - ptr as usize },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(XPWidgetCreate_t),
+            "::",
+            stringify!(bottom)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).visible) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(XPWidgetCreate_t),
+            "::",
+            stringify!(visible)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).descriptor) as usize - ptr as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(XPWidgetCreate_t),
+            "::",
+            stringify!(descriptor)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).isRoot) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(XPWidgetCreate_t),
+            "::",
+            stringify!(isRoot)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).containerIndex) as usize - ptr as usize },
+        36usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(XPWidgetCreate_t),
+            "::",
+            stringify!(containerIndex)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).widgetClass) as usize - ptr as usize },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(XPWidgetCreate_t),
+            "::",
+            stringify!(widgetClass)
+        )
+    );
+}
+extern "C" {
+    #[doc = " XPUCreateWidgets\n\n This function creates a series of widgets from a table (see\n XPCreateWidget_t above). Pass in an array of widget creation structures and\n an array of widget IDs that will receive each widget.\n\n Widget parents are specified by index into the created widget table,\n allowing you to create nested widget structures. You can create multiple\n widget trees in one table. Generally you should create widget trees from\n the top down.\n\n You can also pass in a widget ID that will be used when the widget's parent\n is listed as PARAM_PARENT; this allows you to embed widgets created with\n XPUCreateWidgets in a widget created previously.\n"]
+    pub fn XPUCreateWidgets(
+        inWidgetDefs: *const XPWidgetCreate_t,
+        inCount: ::std::os::raw::c_int,
+        inParamParent: XPWidgetID,
+        ioWidgets: *mut XPWidgetID,
+    );
+}
+extern "C" {
+    #[doc = " XPUMoveWidgetBy\n\n Simply moves a widget by an amount, +x = right, +y = up, without resizing\n the widget.\n"]
+    pub fn XPUMoveWidgetBy(
+        inWidget: XPWidgetID,
+        inDeltaX: ::std::os::raw::c_int,
+        inDeltaY: ::std::os::raw::c_int,
+    );
+}
+extern "C" {
+    #[doc = " XPUFixedLayout\n\n This function causes the widget to maintain its children in fixed position\n relative to itself as it is resized. Use this on the top level 'window'\n widget for your window.\n"]
+    pub fn XPUFixedLayout(
+        inMessage: XPWidgetMessage,
+        inWidget: XPWidgetID,
+        inParam1: isize,
+        inParam2: isize,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    #[doc = " XPUSelectIfNeeded\n\n This causes the widget to bring its window to the foreground if it is not\n already. inEatClick specifies whether clicks in the background should be\n consumed by bringing the window to the foreground.\n"]
+    pub fn XPUSelectIfNeeded(
+        inMessage: XPWidgetMessage,
+        inWidget: XPWidgetID,
+        inParam1: isize,
+        inParam2: isize,
+        inEatClick: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    #[doc = " XPUDefocusKeyboard\n\n This causes the widget to send keyboard focus back to X-Plane. This stops\n editing of any text fields, etc.\n"]
+    pub fn XPUDefocusKeyboard(
+        inMessage: XPWidgetMessage,
+        inWidget: XPWidgetID,
+        inParam1: isize,
+        inParam2: isize,
+        inEatClick: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    #[doc = " XPUDragWidget\n\n XPUDragWidget drags the widget in response to mouse clicks. Pass in not\n only the event, but the global coordinates of the drag region, which might\n be a sub-region of your widget (for example, a title bar).\n"]
+    pub fn XPUDragWidget(
+        inMessage: XPWidgetMessage,
+        inWidget: XPWidgetID,
+        inParam1: isize,
+        inParam2: isize,
+        inLeft: ::std::os::raw::c_int,
+        inTop: ::std::os::raw::c_int,
+        inRight: ::std::os::raw::c_int,
+        inBottom: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
+}
+#[doc = " Control the camera until the user picks a new view."]
+pub const xplm_ControlCameraUntilViewChanges: _bindgen_ty_33 = 1;
+#[doc = " Control the camera until your plugin is disabled or another plugin forcibly*\n takes control."]
+pub const xplm_ControlCameraForever: _bindgen_ty_33 = 2;
+#[doc = " XPLMCameraControlDuration\n\n This enumeration states how long you want to retain control of the camera.\n You can retain it indefinitely or until the user selects a new view.\n"]
+pub type _bindgen_ty_33 = ::std::os::raw::c_int;
+pub type XPLMCameraControlDuration = ::std::os::raw::c_int;
+#[doc = " XPLMCameraPosition_t\n\n This structure contains a full specification of the camera. X, Y, and Z are\n the camera's position in OpenGL coordinates; pitch, roll, and yaw are\n rotations from a camera facing flat north in degrees. Positive pitch means\n nose up, positive roll means roll right, and positive yaw means yaw right,\n all in degrees. Zoom is a zoom factor, with 1.0 meaning normal zoom and 2.0\n magnifying by 2x (objects appear larger).\n"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct XPLMCameraPosition_t {
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
+    pub pitch: f32,
+    pub heading: f32,
+    pub roll: f32,
+    pub zoom: f32,
+}
+#[test]
+fn bindgen_test_layout_XPLMCameraPosition_t() {
+    const UNINIT: ::std::mem::MaybeUninit<XPLMCameraPosition_t> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<XPLMCameraPosition_t>(),
+        28usize,
+        concat!("Size of: ", stringify!(XPLMCameraPosition_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<XPLMCameraPosition_t>(),
+        4usize,
+        concat!("Alignment of ", stringify!(XPLMCameraPosition_t))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(XPLMCameraPosition_t),
+            "::",
+            stringify!(x)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(XPLMCameraPosition_t),
+            "::",
+            stringify!(y)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).z) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(XPLMCameraPosition_t),
+            "::",
+            stringify!(z)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).pitch) as usize - ptr as usize },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(XPLMCameraPosition_t),
+            "::",
+            stringify!(pitch)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).heading) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(XPLMCameraPosition_t),
+            "::",
+            stringify!(heading)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).roll) as usize - ptr as usize },
+        20usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(XPLMCameraPosition_t),
+            "::",
+            stringify!(roll)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).zoom) as usize - ptr as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(XPLMCameraPosition_t),
+            "::",
+            stringify!(zoom)
+        )
+    );
+}
+#[doc = " XPLMCameraControl_f\n\n You use an XPLMCameraControl function to provide continuous control over\n the camera. You are passed a structure in which to put the new camera\n position; modify it and return 1 to reposition the camera. Return 0 to\n surrender control of the camera; camera control will be handled by X-Plane\n on this draw loop. The contents of the structure as you are called are\n undefined.\n\n If X-Plane is taking camera control away from you, this function will be\n called with inIsLosingControl set to 1 and ioCameraPosition NULL.\n"]
+pub type XPLMCameraControl_f = ::std::option::Option<
+    unsafe extern "C" fn(
+        outCameraPosition: *mut XPLMCameraPosition_t,
+        inIsLosingControl: ::std::os::raw::c_int,
+        inRefcon: *mut ::std::os::raw::c_void,
+    ) -> ::std::os::raw::c_int,
+>;
+extern "C" {
+    #[doc = " XPLMControlCamera\n\n This function repositions the camera on the next drawing cycle. You must\n pass a non-null control function. Specify in inHowLong how long you'd like\n control (indefinitely or until a new view mode is set by the user).\n"]
+    pub fn XPLMControlCamera(
+        inHowLong: XPLMCameraControlDuration,
+        inControlFunc: XPLMCameraControl_f,
+        inRefcon: *mut ::std::os::raw::c_void,
+    );
+}
+extern "C" {
+    #[doc = " XPLMDontControlCamera\n\n This function stops you from controlling the camera. If you have a camera\n control function, it will not be called with an inIsLosingControl flag.\n X-Plane will control the camera on the next cycle.\n\n For maximum compatibility you should not use this routine unless you are in\n posession of the camera.\n"]
+    pub fn XPLMDontControlCamera();
+}
+extern "C" {
+    #[doc = " XPLMIsCameraBeingControlled\n\n This routine returns 1 if the camera is being controlled, zero if it is\n not. If it is and you pass in a pointer to a camera control duration, the\n current control duration will be returned.\n"]
+    pub fn XPLMIsCameraBeingControlled(
+        outCameraControlDuration: *mut XPLMCameraControlDuration,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    #[doc = " XPLMReadCameraPosition\n\n This function reads the current camera position.\n"]
+    pub fn XPLMReadCameraPosition(outCameraPosition: *mut XPLMCameraPosition_t);
+}
+#[doc = " XPLMDataRef\n\n A dataref is an opaque handle to data provided by the simulator or another\n plugin. It uniquely identifies one variable (or array of variables) over\n the lifetime of your plugin. You never hard code these values; you always\n get them from XPLMFindDataRef.\n"]
+pub type XPLMDataRef = *mut ::std::os::raw::c_void;
+#[doc = " Data of a type the current XPLM doesn't do."]
+pub const xplmType_Unknown: _bindgen_ty_34 = 0;
+#[doc = " A single 4-byte integer, native endian."]
+pub const xplmType_Int: _bindgen_ty_34 = 1;
+#[doc = " A single 4-byte float, native endian."]
+pub const xplmType_Float: _bindgen_ty_34 = 2;
+#[doc = " A single 8-byte double, native endian."]
+pub const xplmType_Double: _bindgen_ty_34 = 4;
+#[doc = " An array of 4-byte floats, native endian."]
+pub const xplmType_FloatArray: _bindgen_ty_34 = 8;
+#[doc = " An array of 4-byte integers, native endian."]
+pub const xplmType_IntArray: _bindgen_ty_34 = 16;
+#[doc = " A variable block of data."]
+pub const xplmType_Data: _bindgen_ty_34 = 32;
+#[doc = " XPLMDataTypeID\n\n This is an enumeration that defines the type of the data behind a data\n reference. This allows you to sanity check that the data type matches what\n you expect. But for the most part, you will know the type of data you are\n expecting from the online documentation.\n\n Data types each take a bit field; it is legal to have a single dataref be\n more than one type of data.  Whe this happens, you can pick any matching\n get/set API.\n"]
+pub type _bindgen_ty_34 = ::std::os::raw::c_int;
+pub type XPLMDataTypeID = ::std::os::raw::c_int;
+extern "C" {
+    #[doc = " XPLMFindDataRef\n\n Given a C-style string that names the dataref, this routine looks up the\n actual opaque XPLMDataRef that you use to read and write the data. The\n string names for datarefs are published on the X-Plane SDK web site.\n\n This function returns NULL if the dataref cannot be found.\n\n NOTE: this function is relatively expensive; save the XPLMDataRef this\n function returns for future use. Do not look up your dataref by string\n every time you need to read or write it.\n"]
+    pub fn XPLMFindDataRef(inDataRefName: *const ::std::os::raw::c_char) -> XPLMDataRef;
+}
+extern "C" {
+    #[doc = " XPLMCanWriteDataRef\n\n Given a dataref, this routine returns true if you can successfully set the\n data, false otherwise. Some datarefs are read-only.\n\n NOTE: even if a dataref is marked writable, it may not act writable.  This\n can happen for datarefs that X-Plane writes to on every frame of\n simulation.  In some cases, the dataref is writable but you have to set a\n separate \"override\" dataref to 1 to stop X-Plane from writing it.\n"]
+    pub fn XPLMCanWriteDataRef(inDataRef: XPLMDataRef) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    #[doc = " XPLMIsDataRefGood\n\n This function returns true if the passed in handle is a valid dataref that\n is not orphaned.\n\n Note: there is normally no need to call this function; datarefs returned by\n XPLMFindDataRef remain valid (but possibly orphaned) unless there is a\n complete plugin reload (in which case your plugin is reloaded anyway).\n Orphaned datarefs can be safely read and return 0. Therefore you never need\n to call XPLMIsDataRefGood to 'check' the safety of a dataref.\n (XPLMIsDataRefGood performs some slow checking of the handle validity, so\n it has a perormance cost.)\n"]
+    pub fn XPLMIsDataRefGood(inDataRef: XPLMDataRef) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    #[doc = " XPLMGetDataRefTypes\n\n This routine returns the types of the dataref for accessor use. If a\n dataref is available in multiple data types, the bit-wise OR of these types\n will be returned.\n"]
+    pub fn XPLMGetDataRefTypes(inDataRef: XPLMDataRef) -> XPLMDataTypeID;
+}
+extern "C" {
+    #[doc = " XPLMGetDatai\n\n Read an integer dataref and return its value. The return value is the\n dataref value or 0 if the dataref is NULL or the plugin is disabled.\n"]
+    pub fn XPLMGetDatai(inDataRef: XPLMDataRef) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    #[doc = " XPLMSetDatai\n\n Write a new value to an integer dataref. This routine is a no-op if the\n plugin publishing the dataref is disabled, the dataref is NULL, or the\n dataref is not writable.\n"]
+    pub fn XPLMSetDatai(inDataRef: XPLMDataRef, inValue: ::std::os::raw::c_int);
+}
+extern "C" {
+    #[doc = " XPLMGetDataf\n\n Read a single precision floating point dataref and return its value. The\n return value is the dataref value or 0.0 if the dataref is NULL or the\n plugin is disabled.\n"]
+    pub fn XPLMGetDataf(inDataRef: XPLMDataRef) -> f32;
+}
+extern "C" {
+    #[doc = " XPLMSetDataf\n\n Write a new value to a single precision floating point dataref. This\n routine is a no-op if the plugin publishing the dataref is disabled, the\n dataref is NULL, or the dataref is not writable.\n"]
+    pub fn XPLMSetDataf(inDataRef: XPLMDataRef, inValue: f32);
+}
+extern "C" {
+    #[doc = " XPLMGetDatad\n\n Read a double precision floating point dataref and return its value. The\n return value is the dataref value or 0.0 if the dataref is NULL or the\n plugin is disabled.\n"]
+    pub fn XPLMGetDatad(inDataRef: XPLMDataRef) -> f64;
+}
+extern "C" {
+    #[doc = " XPLMSetDatad\n\n Write a new value to a double precision floating point dataref. This\n routine is a no-op if the plugin publishing the dataref is disabled, the\n dataref is NULL, or the dataref is not writable.\n"]
+    pub fn XPLMSetDatad(inDataRef: XPLMDataRef, inValue: f64);
+}
+extern "C" {
+    #[doc = " XPLMGetDatavi\n\n Read a part of an integer array dataref. If you pass NULL for outValues,\n the routine will return the size of the array, ignoring inOffset and inMax.\n\n If outValues is not NULL, then up to inMax values are copied from the\n dataref into outValues, starting at inOffset in the dataref. If inMax +\n inOffset is larger than the size of the dataref, less than inMax values\n will be copied. The number of values copied is returned.\n\n Note: the semantics of array datarefs are entirely implemented by the\n plugin (or X-Plane) that provides the dataref, not the SDK itself; the\n above description is how these datarefs are intended to work, but a rogue\n plugin may have different behavior.\n"]
+    pub fn XPLMGetDatavi(
+        inDataRef: XPLMDataRef,
+        outValues: *mut ::std::os::raw::c_int,
+        inOffset: ::std::os::raw::c_int,
+        inMax: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    #[doc = " XPLMSetDatavi\n\n Write part or all of an integer array dataref. The values passed by\n inValues are written into the dataref starting at inOffset. Up to inCount\n values are written; however if the values would write past the end of the\n dataref array, then fewer values are written.\n\n Note: the semantics of array datarefs are entirely implemented by the\n plugin (or X-Plane) that provides the dataref, not the SDK itself; the\n above description is how these datarefs are intended to work, but a rogue\n plugin may have different behavior.\n"]
+    pub fn XPLMSetDatavi(
+        inDataRef: XPLMDataRef,
+        inValues: *mut ::std::os::raw::c_int,
+        inoffset: ::std::os::raw::c_int,
+        inCount: ::std::os::raw::c_int,
+    );
+}
+extern "C" {
+    #[doc = " XPLMGetDatavf\n\n Read a part of a single precision floating point array dataref. If you pass\n NULL for outValues, the routine will return the size of the array, ignoring\n inOffset and inMax.\n\n If outValues is not NULL, then up to inMax values are copied from the\n dataref into outValues, starting at inOffset in the dataref. If inMax +\n inOffset is larger than the size of the dataref, less than inMax values\n will be copied. The number of values copied is returned.\n\n Note: the semantics of array datarefs are entirely implemented by the\n plugin (or X-Plane) that provides the dataref, not the SDK itself; the\n above description is how these datarefs are intended to work, but a rogue\n plugin may have different behavior.\n"]
+    pub fn XPLMGetDatavf(
+        inDataRef: XPLMDataRef,
+        outValues: *mut f32,
+        inOffset: ::std::os::raw::c_int,
+        inMax: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    #[doc = " XPLMSetDatavf\n\n Write part or all of a single precision floating point array dataref. The\n values passed by inValues are written into the dataref starting at\n inOffset. Up to inCount values are written; however if the values would\n write past the end of the dataref array, then fewer values are written.\n\n Note: the semantics of array datarefs are entirely implemented by the\n plugin (or X-Plane) that provides the dataref, not the SDK itself; the\n above description is how these datarefs are intended to work, but a rogue\n plugin may have different behavior.\n"]
+    pub fn XPLMSetDatavf(
+        inDataRef: XPLMDataRef,
+        inValues: *mut f32,
+        inoffset: ::std::os::raw::c_int,
+        inCount: ::std::os::raw::c_int,
+    );
+}
+extern "C" {
+    #[doc = " XPLMGetDatab\n\n Read a part of a byte array dataref. If you pass NULL for outValues, the\n routine will return the size of the array, ignoring inOffset and inMax.\n\n If outValues is not NULL, then up to inMax values are copied from the\n dataref into outValues, starting at inOffset in the dataref. If inMax +\n inOffset is larger than the size of the dataref, less than inMax values\n will be copied. The number of values copied is returned.\n\n Note: the semantics of array datarefs are entirely implemented by the\n plugin (or X-Plane) that provides the dataref, not the SDK itself; the\n above description is how these datarefs are intended to work, but a rogue\n plugin may have different behavior.\n"]
+    pub fn XPLMGetDatab(
+        inDataRef: XPLMDataRef,
+        outValue: *mut ::std::os::raw::c_void,
+        inOffset: ::std::os::raw::c_int,
+        inMaxBytes: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    #[doc = " XPLMSetDatab\n\n Write part or all of a byte array dataref. The values passed by inValues\n are written into the dataref starting at inOffset. Up to inCount values are\n written; however if the values would write \"off the end\" of the dataref\n array, then fewer values are written.\n\n Note: the semantics of array datarefs are entirely implemented by the\n plugin (or X-Plane) that provides the dataref, not the SDK itself; the\n above description is how these datarefs are intended to work, but a rogue\n plugin may have different behavior.\n"]
+    pub fn XPLMSetDatab(
+        inDataRef: XPLMDataRef,
+        inValue: *mut ::std::os::raw::c_void,
+        inOffset: ::std::os::raw::c_int,
+        inLength: ::std::os::raw::c_int,
+    );
+}
+#[doc = " XPLMGetDatai_f\n\n Data provider function pointers.\n\n These define the function pointers you provide to get or set data. Note\n that you are passed a generic pointer for each one. This is the same\n pointer you pass in your register routine; you can use it to locate plugin\n variables, etc.\n\n The semantics of your callbacks are the same as the dataref accessors above\n - basically routines like XPLMGetDatai are just pass-throughs from a caller\n to your plugin. Be particularly mindful in implementing array dataref\n read-write accessors; you are responsible for avoiding overruns, supporting\n offset read/writes, and handling a read with a NULL buffer.\n"]
+pub type XPLMGetDatai_f = ::std::option::Option<
+    unsafe extern "C" fn(inRefcon: *mut ::std::os::raw::c_void) -> ::std::os::raw::c_int,
+>;
+#[doc = " XPLMSetDatai_f\n"]
+pub type XPLMSetDatai_f = ::std::option::Option<
+    unsafe extern "C" fn(inRefcon: *mut ::std::os::raw::c_void, inValue: ::std::os::raw::c_int),
+>;
+#[doc = " XPLMGetDataf_f\n"]
+pub type XPLMGetDataf_f =
+    ::std::option::Option<unsafe extern "C" fn(inRefcon: *mut ::std::os::raw::c_void) -> f32>;
+#[doc = " XPLMSetDataf_f\n"]
+pub type XPLMSetDataf_f = ::std::option::Option<
+    unsafe extern "C" fn(inRefcon: *mut ::std::os::raw::c_void, inValue: f32),
+>;
+#[doc = " XPLMGetDatad_f\n"]
+pub type XPLMGetDatad_f =
+    ::std::option::Option<unsafe extern "C" fn(inRefcon: *mut ::std::os::raw::c_void) -> f64>;
+#[doc = " XPLMSetDatad_f\n"]
+pub type XPLMSetDatad_f = ::std::option::Option<
+    unsafe extern "C" fn(inRefcon: *mut ::std::os::raw::c_void, inValue: f64),
+>;
+#[doc = " XPLMGetDatavi_f\n"]
+pub type XPLMGetDatavi_f = ::std::option::Option<
+    unsafe extern "C" fn(
+        inRefcon: *mut ::std::os::raw::c_void,
+        outValues: *mut ::std::os::raw::c_int,
+        inOffset: ::std::os::raw::c_int,
+        inMax: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int,
+>;
+#[doc = " XPLMSetDatavi_f\n"]
+pub type XPLMSetDatavi_f = ::std::option::Option<
+    unsafe extern "C" fn(
+        inRefcon: *mut ::std::os::raw::c_void,
+        inValues: *mut ::std::os::raw::c_int,
+        inOffset: ::std::os::raw::c_int,
+        inCount: ::std::os::raw::c_int,
+    ),
+>;
+#[doc = " XPLMGetDatavf_f\n"]
+pub type XPLMGetDatavf_f = ::std::option::Option<
+    unsafe extern "C" fn(
+        inRefcon: *mut ::std::os::raw::c_void,
+        outValues: *mut f32,
+        inOffset: ::std::os::raw::c_int,
+        inMax: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int,
+>;
+#[doc = " XPLMSetDatavf_f\n"]
+pub type XPLMSetDatavf_f = ::std::option::Option<
+    unsafe extern "C" fn(
+        inRefcon: *mut ::std::os::raw::c_void,
+        inValues: *mut f32,
+        inOffset: ::std::os::raw::c_int,
+        inCount: ::std::os::raw::c_int,
+    ),
+>;
+#[doc = " XPLMGetDatab_f\n"]
+pub type XPLMGetDatab_f = ::std::option::Option<
+    unsafe extern "C" fn(
+        inRefcon: *mut ::std::os::raw::c_void,
+        outValue: *mut ::std::os::raw::c_void,
+        inOffset: ::std::os::raw::c_int,
+        inMaxLength: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int,
+>;
+#[doc = " XPLMSetDatab_f\n"]
+pub type XPLMSetDatab_f = ::std::option::Option<
+    unsafe extern "C" fn(
+        inRefcon: *mut ::std::os::raw::c_void,
+        inValue: *mut ::std::os::raw::c_void,
+        inOffset: ::std::os::raw::c_int,
+        inLength: ::std::os::raw::c_int,
+    ),
+>;
+extern "C" {
+    #[doc = " XPLMRegisterDataAccessor\n\n This routine creates a new item of data that can be read and written. Pass\n in the data's full name for searching, the type(s) of the data for\n accessing, and whether the data can be written to. For each data type you\n support, pass in a read accessor function and a write accessor function if\n necessary. Pass NULL for data types you do not support or write accessors\n if you are read-only.\n\n You are returned a dataref for the new item of data created. You can use\n this dataref to unregister your data later or read or write from it.\n"]
+    pub fn XPLMRegisterDataAccessor(
+        inDataName: *const ::std::os::raw::c_char,
+        inDataType: XPLMDataTypeID,
+        inIsWritable: ::std::os::raw::c_int,
+        inReadInt: XPLMGetDatai_f,
+        inWriteInt: XPLMSetDatai_f,
+        inReadFloat: XPLMGetDataf_f,
+        inWriteFloat: XPLMSetDataf_f,
+        inReadDouble: XPLMGetDatad_f,
+        inWriteDouble: XPLMSetDatad_f,
+        inReadIntArray: XPLMGetDatavi_f,
+        inWriteIntArray: XPLMSetDatavi_f,
+        inReadFloatArray: XPLMGetDatavf_f,
+        inWriteFloatArray: XPLMSetDatavf_f,
+        inReadData: XPLMGetDatab_f,
+        inWriteData: XPLMSetDatab_f,
+        inReadRefcon: *mut ::std::os::raw::c_void,
+        inWriteRefcon: *mut ::std::os::raw::c_void,
+    ) -> XPLMDataRef;
+}
+extern "C" {
+    #[doc = " XPLMUnregisterDataAccessor\n\n Use this routine to unregister any data accessors you may have registered.\n You unregister a dataref by the XPLMDataRef you get back from registration.\n Once you unregister a dataref, your function pointer will not be called\n anymore.\n"]
+    pub fn XPLMUnregisterDataAccessor(inDataRef: XPLMDataRef);
+}
+#[doc = " XPLMDataChanged_f\n\n An XPLMDataChanged_f is a callback that the XPLM calls whenever any other\n plug-in modifies shared data. A refcon you provide is passed back to help\n identify which data is being changed. In response, you may want to call one\n of the XPLMGetDataxxx routines to find the new value of the data.\n"]
+pub type XPLMDataChanged_f =
+    ::std::option::Option<unsafe extern "C" fn(inRefcon: *mut ::std::os::raw::c_void)>;
+extern "C" {
+    #[doc = " XPLMShareData\n\n This routine connects a plug-in to shared data, creating the shared data if\n necessary. inDataName is a standard path for the dataref, and inDataType\n specifies the type. This function will create the data if it does not\n exist. If the data already exists but the type does not match, an error is\n returned, so it is important that plug-in authors collaborate to establish\n public standards for shared data.\n\n If a notificationFunc is passed in and is not NULL, that notification\n function will be called whenever the data is modified. The notification\n refcon will be passed to it. This allows your plug-in to know which shared\n data was changed if multiple shared data are handled by one callback, or if\n the plug-in does not use global variables.\n\n A one is returned for successfully creating or finding the shared data; a\n zero if the data already exists but is of the wrong type.\n"]
+    pub fn XPLMShareData(
+        inDataName: *const ::std::os::raw::c_char,
+        inDataType: XPLMDataTypeID,
+        inNotificationFunc: XPLMDataChanged_f,
+        inNotificationRefcon: *mut ::std::os::raw::c_void,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    #[doc = " XPLMUnshareData\n\n This routine removes your notification function for shared data. Call it\n when done with the data to stop receiving change notifications. Arguments\n must match XPLMShareData. The actual memory will not necessarily be freed,\n since other plug-ins could be using it.\n"]
+    pub fn XPLMUnshareData(
+        inDataName: *const ::std::os::raw::c_char,
+        inDataType: XPLMDataTypeID,
+        inNotificationFunc: XPLMDataChanged_f,
+        inNotificationRefcon: *mut ::std::os::raw::c_void,
+    ) -> ::std::os::raw::c_int;
+}
 #[doc = " The bitmap that contains window outlines, button outlines, fonts, etc."]
-pub const xplm_Tex_GeneralInterface: _bindgen_ty_10 = 0;
+pub const xplm_Tex_GeneralInterface: _bindgen_ty_35 = 0;
 #[doc = " XPLMTextureID\n\n XPLM Texture IDs name well-known textures in the sim for you to use. This\n allows you to recycle textures from X-Plane, saving VRAM.\n\n *Warning*: do not use these enums.  The only remaining use they have is to\n  access the legacy compatibility v10 UI texture; if you need this, get it\n  via the Widgets library.\n"]
-pub type _bindgen_ty_10 = ::std::os::raw::c_int;
+pub type _bindgen_ty_35 = ::std::os::raw::c_int;
 pub type XPLMTextureID = ::std::os::raw::c_int;
 extern "C" {
-    #[doc = " XPLMSetGraphicsState\n\n XPLMSetGraphicsState changes OpenGL's fixed function pipeline state.  You\n are not responsible for restoring any state that is accessed via\n XPLMSetGraphicsState, but you are responsible for not accessing this state\n directly.\n\n - inEnableFog - enables or disables fog, equivalent to: glEnable(GL_FOG);\n - inNumberTexUnits - enables or disables a number of multitexturing units.\n   If the number is 0, 2d texturing is disabled entirely, as in\n   glDisable(GL_TEXTURE_2D);  Otherwise, 2d texturing is enabled, and a\n   number of multitexturing units are enabled sequentially, starting with\n   unit 0, e.g. glActiveTextureARB(GL_TEXTURE0_ARB); glEnable\n   (GL_TEXTURE_2D);\n - inEnableLighting - enables or disables OpenGL lighting, e.g.\n   glEnable(GL_LIGHTING); glEnable(GL_LIGHT0);\n - inEnableAlphaTesting - enables or disables the alpha test per pixel, e.g.\n   glEnable(GL_ALPHA_TEST);\n - inEnableAlphaBlending - enables or disables alpha blending per pixel,\n   e.g. glEnable(GL_BLEND);\n - inEnableDepthTesting - enables per pixel depth testing, as in\n   glEnable(GL_DEPTH_TEST);\n - inEnableDepthWriting - enables writing back of depth information to the\n   depth bufffer, as in glDepthMask(GL_TRUE);\n\n The purpose of this function is to change OpenGL state while keeping\n X-Plane aware of the state changes; this keeps X-Plane from getting\n surprised by OGL state changes, and prevents X-Plane and plug-ins from\n having to set all state before all draws; XPLMSetGraphicsState internally\n skips calls to change state that is already properly enabled.\n\n X-Plane does not have a 'default' OGL state for plug-ins with respect to\n the above state vector; plug-ins should totally set OGL state using this\n API before drawing.  Use XPLMSetGraphicsState instead of any of the above\n OpenGL calls.\n\n WARNING: Any routine that performs drawing (e.g. XPLMDrawString or widget\n code) may change X-Plane's state.  Always set state before drawing after\n unknown code has executed.\n\n *Deprecation Warnings*: X-Plane's lighting and fog environemnt is\n  significantly more complex than the fixed function pipeline can express;\n  do not assume that lighting and fog state is a good approximation for 3-d\n  drawing.  Prefer to use XPLMInstancing to draw objects.  All calls to\n  XPLMSetGraphicsState should have no fog or lighting.\n"]
+    #[doc = " XPLMSetGraphicsState\n\n XPLMSetGraphicsState changes OpenGL's fixed function pipeline state.  You\n are not responsible for restoring any state that is accessed via\n XPLMSetGraphicsState, but you are responsible for not accessing this state\n directly.\n\n - inEnableFog - enables or disables fog, equivalent to: glEnable(GL_FOG);\n - inNumberTexUnits - enables or disables a number of multitexturing units.\n   If the number is 0, 2d texturing is disabled entirely, as in\n   glDisable(GL_TEXTURE_2D);  Otherwise, 2d texturing is enabled, and a\n   number of multitexturing units are enabled sequentially, starting with\n   unit 0, e.g. glActiveTextureARB(GL_TEXTURE0_ARB); glEnable\n   (GL_TEXTURE_2D);\n - inEnableLighting - enables or disables OpenGL lighting, e.g.\n   glEnable(GL_LIGHTING); glEnable(GL_LIGHT0);\n - inEnableAlphaTesting - enables or disables the alpha test per pixel, e.g.\n   glEnable(GL_ALPHA_TEST);\n - inEnableAlphaBlending - enables or disables alpha blending per pixel,\n   e.g. glEnable(GL_BLEND);\n - inEnableDepthTesting - enables per pixel depth testing, as in\n   glEnable(GL_DEPTH_TEST);\n - inEnableDepthWriting - enables writing back of depth information to the\n   depth buffer, as in glDepthMask(GL_TRUE);\n\n The purpose of this function is to change OpenGL state while keeping\n X-Plane aware of the state changes; this keeps X-Plane from getting\n surprised by OGL state changes, and prevents X-Plane and plug-ins from\n having to set all state before all draws; XPLMSetGraphicsState internally\n skips calls to change state that is already properly enabled.\n\n X-Plane does not have a 'default' OGL state for plug-ins with respect to\n the above state vector; plug-ins should totally set OGL state using this\n API before drawing.  Use XPLMSetGraphicsState instead of any of the above\n OpenGL calls.\n\n WARNING: Any routine that performs drawing (e.g. XPLMDrawString or widget\n code) may change X-Plane's state.  Always set state before drawing after\n unknown code has executed.\n\n *Deprecation Warnings*: X-Plane's lighting and fog environment is\n  significantly more complex than the fixed function pipeline can express;\n  do not assume that lighting and fog state is a good approximation for 3-d\n  drawing.  Prefer to use XPLMInstancing to draw objects.  All calls to\n  XPLMSetGraphicsState should have no fog or lighting.\n"]
     pub fn XPLMSetGraphicsState(
         inEnableFog: ::std::os::raw::c_int,
         inNumberTexUnits: ::std::os::raw::c_int,
@@ -1228,7 +2240,7 @@ extern "C" {
     );
 }
 extern "C" {
-    #[doc = " XPLMBindTexture2d\n\n  XPLMBindTexture2d changes what texture is bound to the 2d texturing\n  target. This routine caches the current 2d texture across all texturing\n  units in the sim and plug-ins, preventing extraneous binding.  For\n  example, consider several plug-ins running in series; if they all use the\n  'general interface' bitmap to do UI, calling this function will skip the\n  rebinding of the general interface texture on all but the first plug-in,\n  which can provide better frame rate son some graphics cards.\n\n inTextureID is the ID of the texture object to bind; inTextureUnit is a\n zero-based texture unit (e.g. 0 for the first one), up to a maximum of 4\n units.  (This number may increase in future versions of X-Plane.)\n\n Use this routine instead of glBindTexture(GL_TEXTURE_2D, ....);\n"]
+    #[doc = " XPLMBindTexture2d\n\n  XPLMBindTexture2d changes what texture is bound to the 2d texturing\n  target. This routine caches the current 2d texture across all texturing\n  units in the sim and plug-ins, preventing extraneous binding.  For\n  example, consider several plug-ins running in series; if they all use the\n  'general interface' bitmap to do UI, calling this function will skip the\n  rebinding of the general interface texture on all but the first plug-in,\n  which can provide better frame rates on some graphics cards.\n\n inTextureID is the ID of the texture object to bind; inTextureUnit is a\n zero-based texture unit (e.g. 0 for the first one), up to a maximum of 4\n units.  (This number may increase in future versions of X-Plane.)\n\n Use this routine instead of glBindTexture(GL_TEXTURE_2D, ....);\n"]
     pub fn XPLMBindTexture2d(
         inTextureNum: ::std::os::raw::c_int,
         inTextureUnit: ::std::os::raw::c_int,
@@ -1264,7 +2276,7 @@ extern "C" {
     );
 }
 extern "C" {
-    #[doc = " XPLMDrawTranslucentDarkBox\n\n This routine draws a translucent dark box, partially obscuring parts of the\n screen but making text easy to read.  This is the same graphics primitive\n used by X-Plane to show text files and ATC info.\n"]
+    #[doc = " XPLMDrawTranslucentDarkBox\n\n This routine draws a translucent dark box, partially obscuring parts of the\n screen but making text easy to read.  This is the same graphics primitive\n used by X-Plane to show text files.\n"]
     pub fn XPLMDrawTranslucentDarkBox(
         inLeft: ::std::os::raw::c_int,
         inTop: ::std::os::raw::c_int,
@@ -1273,14 +2285,14 @@ extern "C" {
     );
 }
 #[doc = " Mono-spaced font for user interface.  Available in all versions of the SDK."]
-pub const xplmFont_Basic: _bindgen_ty_11 = 0;
+pub const xplmFont_Basic: _bindgen_ty_36 = 0;
 #[doc = " Proportional UI font."]
-pub const xplmFont_Proportional: _bindgen_ty_11 = 18;
+pub const xplmFont_Proportional: _bindgen_ty_36 = 18;
 #[doc = " XPLMFontID\n\n X-Plane features some fixed-character fonts.  Each font may have its own\n metrics.\n\n WARNING: Some of these fonts are no longer supported or may have changed\n geometries. For maximum copmatibility, see the comments below.\n\n Note: X-Plane 7 supports proportional-spaced fonts.  Since no measuring\n routine is available yet, the SDK will normally draw using a fixed-width\n font.  You can use a dataref to enable proportional font drawing on XP7 if\n you want to.\n"]
-pub type _bindgen_ty_11 = ::std::os::raw::c_int;
+pub type _bindgen_ty_36 = ::std::os::raw::c_int;
 pub type XPLMFontID = ::std::os::raw::c_int;
 extern "C" {
-    #[doc = " XPLMDrawString\n\n This routine draws a NULL termianted string in a given font.  Pass in the\n lower left pixel that the character is to be drawn onto.  Also pass the\n character and font ID. This function returns the x offset plus the width of\n all drawn characters. The color to draw in is specified as a pointer to an\n array of three floating point colors, representing RGB intensities from 0.0\n to 1.0.\n"]
+    #[doc = " XPLMDrawString\n\n This routine draws a NULL terminated string in a given font.  Pass in the\n lower left pixel that the character is to be drawn onto.  Also pass the\n character and font ID. This function returns the x offset plus the width of\n all drawn characters. The color to draw in is specified as a pointer to an\n array of three floating point colors, representing RGB intensities from 0.0\n to 1.0.\n"]
     pub fn XPLMDrawString(
         inColorRGB: *mut f32,
         inXOffset: ::std::os::raw::c_int,
@@ -1321,18 +2333,18 @@ extern "C" {
     ) -> f32;
 }
 #[doc = " The Y probe gives you the location of the tallest physical scenery along   *\n the Y axis going through the queried point."]
-pub const xplm_ProbeY: _bindgen_ty_12 = 0;
-#[doc = " XPLMProbeType\n\n XPLMProbeType defines the type of terrain probe - each probe has a\n different algorithm. (Only one type of probe is provided right now, but\n future APIs will expose more flexible or poewrful or useful probes.\n"]
-pub type _bindgen_ty_12 = ::std::os::raw::c_int;
+pub const xplm_ProbeY: _bindgen_ty_37 = 0;
+#[doc = " XPLMProbeType\n\n XPLMProbeType defines the type of terrain probe - each probe has a\n different algorithm. (Only one type of probe is provided right now, but\n future APIs will expose more flexible or powerful or useful probes.\n"]
+pub type _bindgen_ty_37 = ::std::os::raw::c_int;
 pub type XPLMProbeType = ::std::os::raw::c_int;
 #[doc = " The probe hit terrain and returned valid values."]
-pub const xplm_ProbeHitTerrain: _bindgen_ty_13 = 0;
-#[doc = " An error in the API call.  Either the probe struct size is bad, or the     *\n probe is invalid or the type is mismatched for the specific query call."]
-pub const xplm_ProbeError: _bindgen_ty_13 = 1;
+pub const xplm_ProbeHitTerrain: _bindgen_ty_38 = 0;
+#[doc = " An error in the API call.  Either the probe struct size is bad, the probe  *\n is invalid, or the type is mismatched for the specific query call."]
+pub const xplm_ProbeError: _bindgen_ty_38 = 1;
 #[doc = " The probe call succeeded but there is no terrain under this point (perhaps *\n it is off the side of the planet?)"]
-pub const xplm_ProbeMissed: _bindgen_ty_13 = 2;
+pub const xplm_ProbeMissed: _bindgen_ty_38 = 2;
 #[doc = " XPLMProbeResult\n\n Probe results - possible results from a probe query.\n"]
-pub type _bindgen_ty_13 = ::std::os::raw::c_int;
+pub type _bindgen_ty_38 = ::std::os::raw::c_int;
 pub type XPLMProbeResult = ::std::os::raw::c_int;
 #[doc = " XPLMProbeRef\n\n An XPLMProbeRef is an opaque handle to a probe, used for querying the\n terrain.\n"]
 pub type XPLMProbeRef = *mut ::std::os::raw::c_void;
@@ -1629,7 +2641,7 @@ pub type XPLMObjectLoaded_f = ::std::option::Option<
     unsafe extern "C" fn(inObject: XPLMObjectRef, inRefcon: *mut ::std::os::raw::c_void),
 >;
 extern "C" {
-    #[doc = " XPLMLoadObject\n\n This routine loads an OBJ file and returns a handle to it. If X-Plane has\n already loaded the object, the handle to the existing object is returned.\n Do not assume you will get the same handle back twice, but do make sure to\n call unload once for every load to avoid \"leaking\" objects. The object will\n be purged from memory when no plugins and no scenery are using it.\n\n The path for the object must be relative to the X-System base folder. If\n the path is in the root of the X-System folder you may need to prepend ./\n to it; loading objects in the root of the X-System folder is STRONGLY\n discouraged - your plugin should not dump art resources in the root folder!\n\n XPLMLoadObject will return NULL if the object cannot be loaded (either\n because it is not found or the file is misformatted). This routine will\n load any object that can be used in the X-Plane scenery system.\n\n It is important that the datarefs an object uses for animation already be\n loaded before you load the object. For this reason it may be necessary to\n defer object loading until the sim has fully started.\n"]
+    #[doc = " XPLMLoadObject\n\n This routine loads an OBJ file and returns a handle to it. If X-Plane has\n already loaded the object, the handle to the existing object is returned.\n Do not assume you will get the same handle back twice, but do make sure to\n call unload once for every load to avoid \"leaking\" objects. The object will\n be purged from memory when no plugins and no scenery are using it.\n\n The path for the object must be relative to the X-System base folder. If\n the path is in the root of the X-System folder you may need to prepend ./\n to it; loading objects in the root of the X-System folder is STRONGLY\n discouraged - your plugin should not dump art resources in the root folder!\n\n XPLMLoadObject will return NULL if the object cannot be loaded (either\n because it is not found or the file is misformatted). This routine will\n load any object that can be used in the X-Plane scenery system.\n\n It is important that the datarefs an object uses for animation already be\n registered before you load the object. For this reason it may be necessary\n to defer object loading until the sim has fully started.\n"]
     pub fn XPLMLoadObject(inPath: *const ::std::os::raw::c_char) -> XPLMObjectRef;
 }
 extern "C" {
@@ -1664,7 +2676,7 @@ extern "C" {
 #[doc = " XPLMInstanceRef\n\n An opaque handle to an instance.\n"]
 pub type XPLMInstanceRef = *mut ::std::os::raw::c_void;
 extern "C" {
-    #[doc = " XPLMCreateInstance\n\n XPLMCreateInstance creates a new instance, managed by your plug-in, and\n returns a handle to the instance. A few important requirements:\n\n * The object passed in must be fully loaded and returned from the XPLM\n   before you can create your instance; you cannot pass a null obj ref, nor\n   can you change the ref later.\n\n * If you use any custom datarefs in your object, they must be registered\n   before the object is loaded. This is true even if their data will be\n   provided via the instance dataref list.\n\n * The instance dataref array must be a valid ptr to an array of at least\n   one item that is null terminated.  That is, if you do not want any\n   datarefs, you must passa ptr to an array with a null item.  You cannot\n   pass null for this.\n"]
+    #[doc = " XPLMCreateInstance\n\n XPLMCreateInstance creates a new instance, managed by your plug-in, and\n returns a handle to the instance. A few important requirements:\n\n * The object passed in must be fully loaded and returned from the XPLM\n   before you can create your instance; you cannot pass a null obj ref, nor\n   can you change the ref later.\n\n * If you use any custom datarefs in your object, they must be registered\n   before the object is loaded. This is true even if their data will be\n   provided via the instance dataref list.\n\n * The instance dataref array must be a valid pointer to a null-terminated\n   array.  That is, if you do not want any datarefs, you must pass a pointer\n   to a one-element array containing a null item.  You cannot pass null for\n   the array itself.\n"]
     pub fn XPLMCreateInstance(
         obj: XPLMObjectRef,
         datarefs: *mut *const ::std::os::raw::c_char,
@@ -1675,7 +2687,7 @@ extern "C" {
     pub fn XPLMDestroyInstance(instance: XPLMInstanceRef);
 }
 extern "C" {
-    #[doc = " XPLMInstanceSetPosition\n\n Updates both the position of the instance and all datarefs you registered\n for it.  Call this from a flight loop callback or UI callback.\n\n __DO NOT__ call XPLMInstanceSetPosition from a drawing callback; the whole\n point of instancing is that you do not need any drawing callbacks. Setting\n instance data from a drawing callback may have undefined consequences, and\n the drawing callback hurts FPS unnecessarily.\n\n The memory pointed to by the data pointer must be large enough to hold one\n float for every data ref you have registered, and must contain valid\n floating point data.\n\n BUG: before X-Plane 11.50, if you have no dataref registered, you must\n still pass a valid pointer for data and not null.\n"]
+    #[doc = " XPLMInstanceSetPosition\n\n Updates both the position of the instance and all datarefs you registered\n for it.  Call this from a flight loop callback or UI callback.\n\n __DO_NOT__ call XPLMInstanceSetPosition from a drawing callback; the whole\n point of instancing is that you do not need any drawing callbacks. Setting\n instance data from a drawing callback may have undefined consequences, and\n the drawing callback hurts FPS unnecessarily.\n\n The memory pointed to by the data pointer must be large enough to hold one\n float for every dataref you have registered, and must contain valid\n floating point data.\n\n BUG: before X-Plane 11.50, if you have no dataref registered, you must\n still pass a valid pointer for data and not null.\n"]
     pub fn XPLMInstanceSetPosition(
         instance: XPLMInstanceRef,
         new_position: *const XPLMDrawInfo_t,
@@ -1686,11 +2698,11 @@ extern "C" {
 pub type XPLMMapLayerID = *mut ::std::os::raw::c_void;
 #[doc = " XPLMMapProjectionID\n\n This is an opaque handle for a map projection. Pass it to the projection\n APIs to translate between map coordinates and latitude/longitudes.\n"]
 pub type XPLMMapProjectionID = *mut ::std::os::raw::c_void;
-pub const xplm_MapStyle_VFR_Sectional: _bindgen_ty_14 = 0;
-pub const xplm_MapStyle_IFR_LowEnroute: _bindgen_ty_14 = 1;
-pub const xplm_MapStyle_IFR_HighEnroute: _bindgen_ty_14 = 2;
+pub const xplm_MapStyle_VFR_Sectional: _bindgen_ty_39 = 0;
+pub const xplm_MapStyle_IFR_LowEnroute: _bindgen_ty_39 = 1;
+pub const xplm_MapStyle_IFR_HighEnroute: _bindgen_ty_39 = 2;
 #[doc = " XPLMMapStyle\n\n Indicates the visual style being drawn by the map. In X-Plane, the user can\n choose between a number of map types, and different map types may have use\n a different visual representation for the same elements (for instance, the\n visual style of the terrain layer changes drastically between the VFR and\n IFR layers), or certain layers may be disabled entirely in some map types\n (e.g., localizers are only visible in the IFR low-enroute style).\n"]
-pub type _bindgen_ty_14 = ::std::os::raw::c_int;
+pub type _bindgen_ty_39 = ::std::os::raw::c_int;
 pub type XPLMMapStyle = ::std::os::raw::c_int;
 #[doc = " XPLMMapDrawingCallback_f\n\n This is the OpenGL map drawing callback for plugin-created map layers. You\n can perform arbitrary OpenGL drawing from this callback, with one\n exception: changes to the Z-buffer are not permitted, and will result in\n map drawing errors.\n\n All drawing done from within this callback appears beneath all built-in\n X-Plane icons and labels, but above the built-in \"fill\" layers (layers\n providing major details, like terrain and water). Note, however, that the\n relative ordering between the drawing callbacks of different plugins is not\n guaranteed.\n"]
 pub type XPLMMapDrawingCallback_f = ::std::option::Option<
@@ -1742,11 +2754,11 @@ pub type XPLMMapWillBeDeletedCallback_f = ::std::option::Option<
     unsafe extern "C" fn(inLayer: XPLMMapLayerID, inRefcon: *mut ::std::os::raw::c_void),
 >;
 #[doc = " A layer that draws \"fill\" graphics, like weather patterns, terrain, etc.   *\n Fill layers frequently cover a large portion of the visible map area."]
-pub const xplm_MapLayer_Fill: _bindgen_ty_15 = 0;
+pub const xplm_MapLayer_Fill: _bindgen_ty_40 = 0;
 #[doc = " A layer that provides markings for particular map features, like NAVAIDs,  *\n airports, etc. Even dense markings layers cover a small portion of the     *\n total map area."]
-pub const xplm_MapLayer_Markings: _bindgen_ty_15 = 1;
+pub const xplm_MapLayer_Markings: _bindgen_ty_40 = 1;
 #[doc = " XPLMMapLayerType\n\n Indicates the type of map layer you are creating. Fill layers will always\n be drawn beneath markings layers.\n"]
-pub type _bindgen_ty_15 = ::std::os::raw::c_int;
+pub type _bindgen_ty_40 = ::std::os::raw::c_int;
 pub type XPLMMapLayerType = ::std::os::raw::c_int;
 #[doc = " XPLMCreateMapLayer_t\n\n This structure defines all of the parameters used to create a map layer\n using XPLMCreateMapLayer. The structure will be expanded in future SDK APIs\n to include more features.  Always set the structSize member to the size of\n your struct in bytes!\n\n Each layer must be associated with exactly one map instance in X-Plane.\n That map, and that map alone, will call your callbacks. Likewise, when that\n map is deleted, your layer will be as well.\n"]
 #[repr(C)]
@@ -1901,7 +2913,7 @@ fn bindgen_test_layout_XPLMCreateMapLayer_t() {
     );
 }
 extern "C" {
-    #[doc = " XPLMCreateMapLayer\n\n This routine creates a new map layer. You pass in an XPLMCreateMapLayer_t\n structure with all of the fields set in.  You must set the structSize of\n the structure to the size of the actual structure you used.\n\n Returns NULL if the layer creation failed. This happens most frequently\n because the map you specified in your\n XPLMCreateMapLayer_t::mapToCreateLayerIn field doesn't exist (that is, if\n XPLMMapExists() returns 0 for the specified map). You can use\n XPLMRegisterMapCreationHook() to get a notification each time a new map is\n opened in X-Plane, at which time you can create layers in it.\n"]
+    #[doc = " XPLMCreateMapLayer\n\n This routine creates a new map layer. You pass in an XPLMCreateMapLayer_t\n structure with all of the fields defined.  You must set the structSize of\n the structure to the size of the actual structure you used.\n\n Returns NULL if the layer creation failed. This happens most frequently\n because the map you specified in your\n XPLMCreateMapLayer_t::mapToCreateLayerIn field doesn't exist (that is, if\n XPLMMapExists() returns 0 for the specified map). You can use\n XPLMRegisterMapCreationHook() to get a notification each time a new map is\n opened in X-Plane, at which time you can create layers in it.\n"]
     pub fn XPLMCreateMapLayer(inParams: *mut XPLMCreateMapLayer_t) -> XPLMMapLayerID;
 }
 extern "C" {
@@ -1927,14 +2939,14 @@ extern "C" {
     pub fn XPLMMapExists(mapIdentifier: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
 }
 #[doc = " Orient such that a 0 degree rotation matches the map's north"]
-pub const xplm_MapOrientation_Map: _bindgen_ty_16 = 0;
+pub const xplm_MapOrientation_Map: _bindgen_ty_41 = 0;
 #[doc = " Orient such that a 0 degree rotation is \"up\" relative to the user interface"]
-pub const xplm_MapOrientation_UI: _bindgen_ty_16 = 1;
+pub const xplm_MapOrientation_UI: _bindgen_ty_41 = 1;
 #[doc = " XPLMMapOrientation\n\n Indicates whether a map element should be match its rotation to the map\n itself, or to the user interface. For instance, the map itself may be\n rotated such that \"up\" matches the user's aircraft, but you may want to\n draw a text label such that it is always rotated zero degrees relative to\n the user's perspective. In that case, you would have it draw with UI\n orientation.\n"]
-pub type _bindgen_ty_16 = ::std::os::raw::c_int;
+pub type _bindgen_ty_41 = ::std::os::raw::c_int;
 pub type XPLMMapOrientation = ::std::os::raw::c_int;
 extern "C" {
-    #[doc = " XPLMDrawMapIconFromSheet\n\n Enables plugin-created map layers to draw PNG icons using X-Plane's\n built-in icon drawing functionality. Only valid from within an\n XPLMIconDrawingCallback_t (but you can request an arbitrary number of icons\n to be drawn from within your callback).\n\n X-Plane will automatically manage the memory for your texture so that it\n only has to be loaded from disk once as long as you continue drawing it\n per-frame. (When you stop drawing it, the memory may purged in a \"garbage\n collection\" pass, require a load from disk in the future.)\n\n Instead of having X-Plane draw a full PNG, this method allows you to use UV\n coordinates to request a portion of the image to be drawn. This allows you\n to use a single texture load (of an icon sheet, for example) to draw many\n icons. Doing so is much more efficient than drawing a dozen different small\n PNGs.\n\n The UV coordinates used here treat the texture you load as being comprised\n of a number of identically sized \"cells.\" You specify the width and height\n in cells (ds and dt, respectively), as well as the coordinates within the\n cell grid for the sub-image you'd like to draw.\n\n Note that you can use different ds and dt values in subsequent calls with\n the same texture sheet. This enables you to use icons of different sizes in\n the same sheet if you arrange them properly in the PNG.\n\n This function is only valid from within an XPLMIconDrawingCallback_t (but\n you can request an arbitrary number of icons to be drawn from within your\n callback).\n"]
+    #[doc = " XPLMDrawMapIconFromSheet\n\n Enables plugin-created map layers to draw PNG icons using X-Plane's\n built-in icon drawing functionality. Only valid from within an\n XPLMIconDrawingCallback_t (but you can request an arbitrary number of icons\n to be drawn from within your callback).\n\n X-Plane will automatically manage the memory for your texture so that it\n only has to be loaded from disk once as long as you continue drawing it\n per-frame. (When you stop drawing it, the memory may purged in a \"garbage\n collection\" pass, require a load from disk in the future.)\n\n Instead of having X-Plane draw a full PNG, this method allows you to use UV\n coordinates to request a portion of the image to be drawn. This allows you\n to use a single texture load (of an icon sheet, for example) to draw many\n icons. Doing so is much more efficient than drawing a dozen different small\n PNGs.\n\n The UV coordinates used here treat the texture you load as being comprised\n of a number of identically sized \"cells\". You specify the width and height\n in cells (ds and dt, respectively), as well as the coordinates within the\n cell grid for the sub-image you'd like to draw.\n\n Note that you can use different ds and dt values in subsequent calls with\n the same texture sheet. This enables you to use icons of different sizes in\n the same sheet if you arrange them properly in the PNG.\n\n This function is only valid from within an XPLMIconDrawingCallback_t (but\n you can request an arbitrary number of icons to be drawn from within your\n callback).\n"]
     pub fn XPLMDrawMapIconFromSheet(
         layer: XPLMMapLayerID,
         inPngPath: *const ::std::os::raw::c_char,
@@ -1985,36 +2997,36 @@ extern "C" {
     pub fn XPLMMapScaleMeter(projection: XPLMMapProjectionID, mapX: f32, mapY: f32) -> f32;
 }
 extern "C" {
-    #[doc = " XPLMMapGetNorthHeading\n\n Returns the heading (in degrees clockwise from \"up\") that corresponds to\n north at a given point on the map. In other words, if your runway has a\n true heading of 360, you would use \"north\" as the Cartesian angle at which\n to draw the runway on the map. (You would add the result of\n XPLMMapGetNorthHeading() to your true heading to get the map angle.)\n\n This is necessary becuase X-Plane's map can be rotated to match your\n aircraft's orientation; north is not always \"up.\"\n\n Only valid from within a map layer callback (one of\n XPLMMapPrepareCacheCallback_f, XPLMMapDrawingCallback_f,\n XPLMMapIconDrawingCallback_f, or XPLMMapLabelDrawingCallback_f.)\n"]
+    #[doc = " XPLMMapGetNorthHeading\n\n Returns the heading (in degrees clockwise) from the positive Y axis in the\n cartesian mapping coordinate system to true north at the point passed in.\n You can use it as a clockwise rotational offset to align icons and other\n 2-d drawing with true north on the map, compensating for rotations in the\n map due to projection.\n\n Only valid from within a map layer callback (one of\n XPLMMapPrepareCacheCallback_f, XPLMMapDrawingCallback_f,\n XPLMMapIconDrawingCallback_f, or XPLMMapLabelDrawingCallback_f.)\n"]
     pub fn XPLMMapGetNorthHeading(projection: XPLMMapProjectionID, mapX: f32, mapY: f32) -> f32;
 }
 #[doc = " A situation (.sit) file, which starts off a flight in a given              *\n configuration."]
-pub const xplm_DataFile_Situation: _bindgen_ty_17 = 1;
+pub const xplm_DataFile_Situation: _bindgen_ty_42 = 1;
 #[doc = " A situation movie (.smo) file, which replays a past flight."]
-pub const xplm_DataFile_ReplayMovie: _bindgen_ty_17 = 2;
+pub const xplm_DataFile_ReplayMovie: _bindgen_ty_42 = 2;
 #[doc = " XPLMDataFileType\n\n These enums define types of data files you can load or unload using the\n SDK.\n"]
-pub type _bindgen_ty_17 = ::std::os::raw::c_int;
+pub type _bindgen_ty_42 = ::std::os::raw::c_int;
 pub type XPLMDataFileType = ::std::os::raw::c_int;
 extern "C" {
-    #[doc = " XPLMGetSystemPath\n\n This function returns the full path to the X-System folder. Note that this\n is a directory path, so it ends in a trailing : or /.\n\n The buffer you pass should be at least 512 characters long.  The path is\n returned using the current native or OS path conventions.\n"]
+    #[doc = " XPLMGetSystemPath\n\n This function returns the full path to the X-System folder. Note that this\n is a directory path, so it ends in a trailing : or / .\n\n The buffer you pass should be at least 512 characters long.  The path is\n returned using the current native or OS path conventions.\n"]
     pub fn XPLMGetSystemPath(outSystemPath: *mut ::std::os::raw::c_char);
 }
 extern "C" {
-    #[doc = " XPLMGetPrefsPath\n\n This routine returns a full path to a file that is within X-Plane's\n preferences directory. (You should remove the file name back to the last\n directory separator to get the preferences directory using\n XPLMExtractFileAndPath.)\n\n The buffer you pass should be at least 512 characters long.  The path is\n returned using the current native or OS path conventions.\n"]
+    #[doc = " XPLMGetPrefsPath\n\n This routine returns a full path to a file that is within X-Plane's\n preferences directory. (You should remove the file name back to the last\n directory separator to get the preferences directory using\n XPLMExtractFileAndPath).\n\n The buffer you pass should be at least 512 characters long.  The path is\n returned using the current native or OS path conventions.\n"]
     pub fn XPLMGetPrefsPath(outPrefsPath: *mut ::std::os::raw::c_char);
 }
 extern "C" {
-    #[doc = " XPLMGetDirectorySeparator\n\n This routine returns a string with one char and a null terminator that is\n the directory separator for the current platform. This allows you to write\n code that concatinates directory paths without having to #ifdef for\n platform. The character returned will reflect the current file path mode.\n"]
+    #[doc = " XPLMGetDirectorySeparator\n\n This routine returns a string with one char and a null terminator that is\n the directory separator for the current platform. This allows you to write\n code that concatenates directory paths without having to #ifdef for\n platform. The character returned will reflect the current file path mode.\n"]
     pub fn XPLMGetDirectorySeparator() -> *const ::std::os::raw::c_char;
 }
 extern "C" {
-    #[doc = " XPLMExtractFileAndPath\n\n Given a full path to a file, this routine separates the path from the file.\n If the path is a partial directory (e.g. ends in : or \\) the trailing\n directory separator is removed. This routine works in-place; a pointer to\n the file part of the buffer is returned; the original buffer still starts\n with the path and is null terminated with no trailing separator.\n"]
+    #[doc = " XPLMExtractFileAndPath\n\n Given a full path to a file, this routine separates the path from the file.\n If the path is a partial directory (e.g. ends in : or / ) the trailing\n directory separator is removed. This routine works in-place; a pointer to\n the file part of the buffer is returned; the original buffer still starts\n with the path and is null terminated with no trailing separator.\n"]
     pub fn XPLMExtractFileAndPath(
         inFullPath: *mut ::std::os::raw::c_char,
     ) -> *mut ::std::os::raw::c_char;
 }
 extern "C" {
-    #[doc = " XPLMGetDirectoryContents\n\n This routine returns a list of files in a directory (specified by a full\n path, no trailing : or \\). The output is returned as a list of NULL\n terminated strings. An index array (if specified) is filled with pointers\n into the strings. The last file is indicated by a zero-length string (and\n NULL in the indices). This routine will return 1 if you had capacity for\n all files or 0 if you did not. You can also skip a given number of files.\n\n  * inDirectoryPath - a null terminated C string containing the full path to\n    the directory with no trailing directory char.\n\n  * inFirstReturn - the zero-based index of the first file in the directory\n    to return. (Usually zero to fetch all in one pass.)\n\n  * outFileNames - a buffer to receive a series of sequential null\n    terminated C-string file names. A zero-length C string will be appended\n    to the very end.\n\n  * inFileNameBufSize - the size of the file name buffer in bytes.\n\n  * outIndices - a pointer to an array of character pointers that will\n    become an index into the directory. The last file will be followed by a\n    NULL value. Pass NULL if you do not want indexing information.\n\n  * inIndexCount - the max size of the index in entries.\n\n  * outTotalFiles - if not NULL, this is filled in with the number of files\n    in the directory.\n\n  * outReturnedFiles - if not NULL, the number of files returned by this\n    iteration.\n\n Return value: 1 if all info could be returned, 0 if there was a buffer\n overrun.\n\n WARNING: Before X-Plane 7 this routine did not properly iterate through\n directories. If X-Plane\n 6 compatibility is needed, use your own code to iterate directories.\n"]
+    #[doc = " XPLMGetDirectoryContents\n\n This routine returns a list of files in a directory (specified by a full\n path, no trailing : or / ). The output is returned as a list of NULL\n terminated strings. An index array (if specified) is filled with pointers\n into the strings. The last file is indicated by a zero-length string (and\n NULL in the indices). This routine will return 1 if you had capacity for\n all files or 0 if you did not. You can also skip a given number of files.\n\n  * inDirectoryPath - a null terminated C string containing the full path to\n    the directory with no trailing directory char.\n\n  * inFirstReturn - the zero-based index of the first file in the directory\n    to return. (Usually zero to fetch all in one pass.)\n\n  * outFileNames - a buffer to receive a series of sequential null\n    terminated C-string file names. A zero-length C string will be appended\n    to the very end.\n\n  * inFileNameBufSize - the size of the file name buffer in bytes.\n\n  * outIndices - a pointer to an array of character pointers that will\n    become an index into the directory. The last file will be followed by a\n    NULL value. Pass NULL if you do not want indexing information.\n\n  * inIndexCount - the max size of the index in entries.\n\n  * outTotalFiles - if not NULL, this is filled in with the number of files\n    in the directory.\n\n  * outReturnedFiles - if not NULL, the number of files returned by this\n    iteration.\n\n Return value: 1 if all info could be returned, 0 if there was a buffer\n overrun.\n\n WARNING: Before X-Plane 7 this routine did not properly iterate through\n directories. If X-Plane\n 6 compatibility is needed, use your own code to iterate directories.\n"]
     pub fn XPLMGetDirectoryContents(
         inDirectoryPath: *const ::std::os::raw::c_char,
         inFirstReturn: ::std::os::raw::c_int,
@@ -2040,30 +3052,30 @@ extern "C" {
         inFilePath: *const ::std::os::raw::c_char,
     ) -> ::std::os::raw::c_int;
 }
-pub const xplm_Host_Unknown: _bindgen_ty_18 = 0;
-pub const xplm_Host_XPlane: _bindgen_ty_18 = 1;
+pub const xplm_Host_Unknown: _bindgen_ty_43 = 0;
+pub const xplm_Host_XPlane: _bindgen_ty_43 = 1;
 #[doc = " XPLMHostApplicationID\n\n While the plug-in SDK is only accessible to plugins running inside X-Plane,\n the original authors considered extending the API to other applications\n that shared basic infrastructure with X-Plane. These enumerations are\n hold-overs from that original roadmap; all values other than X-Plane are\n deprecated. Your plugin should never need this enumeration.\n"]
-pub type _bindgen_ty_18 = ::std::os::raw::c_int;
+pub type _bindgen_ty_43 = ::std::os::raw::c_int;
 pub type XPLMHostApplicationID = ::std::os::raw::c_int;
-pub const xplm_Language_Unknown: _bindgen_ty_19 = 0;
-pub const xplm_Language_English: _bindgen_ty_19 = 1;
-pub const xplm_Language_French: _bindgen_ty_19 = 2;
-pub const xplm_Language_German: _bindgen_ty_19 = 3;
-pub const xplm_Language_Italian: _bindgen_ty_19 = 4;
-pub const xplm_Language_Spanish: _bindgen_ty_19 = 5;
-pub const xplm_Language_Korean: _bindgen_ty_19 = 6;
-pub const xplm_Language_Russian: _bindgen_ty_19 = 7;
-pub const xplm_Language_Greek: _bindgen_ty_19 = 8;
-pub const xplm_Language_Japanese: _bindgen_ty_19 = 9;
-pub const xplm_Language_Chinese: _bindgen_ty_19 = 10;
+pub const xplm_Language_Unknown: _bindgen_ty_44 = 0;
+pub const xplm_Language_English: _bindgen_ty_44 = 1;
+pub const xplm_Language_French: _bindgen_ty_44 = 2;
+pub const xplm_Language_German: _bindgen_ty_44 = 3;
+pub const xplm_Language_Italian: _bindgen_ty_44 = 4;
+pub const xplm_Language_Spanish: _bindgen_ty_44 = 5;
+pub const xplm_Language_Korean: _bindgen_ty_44 = 6;
+pub const xplm_Language_Russian: _bindgen_ty_44 = 7;
+pub const xplm_Language_Greek: _bindgen_ty_44 = 8;
+pub const xplm_Language_Japanese: _bindgen_ty_44 = 9;
+pub const xplm_Language_Chinese: _bindgen_ty_44 = 10;
 #[doc = " XPLMLanguageCode\n\n These enums define what language the sim is running in. These enumerations\n do not imply that the sim can or does run in all of these languages; they\n simply provide a known encoding in the event that a given sim version is\n localized to a certain language.\n"]
-pub type _bindgen_ty_19 = ::std::os::raw::c_int;
+pub type _bindgen_ty_44 = ::std::os::raw::c_int;
 pub type XPLMLanguageCode = ::std::os::raw::c_int;
 #[doc = " XPLMError_f\n\n An XPLM error callback is a function that you provide to receive debugging\n information from the plugin SDK. See XPLMSetErrorCallback for more\n information. NOTE: for the sake of debugging, your error callback will be\n called even if your plugin is not enabled, allowing you to receive debug\n info in your XPluginStart and XPluginStop callbacks. To avoid causing logic\n errors in the management code, do not call any other plugin routines from\n your error callback - it is only meant for catching errors in the\n debugging.\n"]
 pub type XPLMError_f =
     ::std::option::Option<unsafe extern "C" fn(inMessage: *const ::std::os::raw::c_char)>;
 extern "C" {
-    #[doc = " XPLMGetVersions\n\n This routine returns the revision of both X-Plane and the XPLM DLL. All\n versions are three-digit decimal numbers (e.g. 606 for version 6.06 of\n X-Plane); the current revision of the XPLM is 200 (2.00). This routine also\n returns the host ID of the app running us.\n\n The most common use of this routine is to special-case around X-Plane\n version-specific behavior.\n"]
+    #[doc = " XPLMGetVersions\n\n This routine returns the revision of both X-Plane and the XPLM DLL. All\n versions are at least three-digit decimal numbers (e.g. 606 for version\n 6.06 of X-Plane); the current revision of the XPLM is 400 (4.00). This\n routine also returns the host ID of the app running us.\n\n The most common use of this routine is to special-case around X-Plane\n version-specific behavior.\n"]
     pub fn XPLMGetVersions(
         outXPlaneVersion: *mut ::std::os::raw::c_int,
         outXPLMVersion: *mut ::std::os::raw::c_int,
@@ -2097,17 +3109,17 @@ extern "C" {
     ) -> *const ::std::os::raw::c_char;
 }
 extern "C" {
-    #[doc = " XPLMReloadScenery\n\n XPLMReloadScenery reloads the current set of scenery. You can use this\n function in two typical ways: simply call it to reload the scenery, picking\n up any new installed scenery, .env files, etc. from disk. Or, change the\n lat/ref and lon/ref data refs and then call this function to shift the\n scenery environment.  This routine is equivalent to picking \"reload\n scenery\" from the developer menu.\n"]
+    #[doc = " XPLMReloadScenery\n\n XPLMReloadScenery reloads the current set of scenery. You can use this\n function in two typical ways: simply call it to reload the scenery, picking\n up any new installed scenery, .env files, etc. from disk. Or, change the\n lat/ref and lon/ref datarefs and then call this function to shift the\n scenery environment.  This routine is equivalent to picking \"reload\n scenery\" from the developer menu.\n"]
     pub fn XPLMReloadScenery();
 }
 #[doc = " The command is being started."]
-pub const xplm_CommandBegin: _bindgen_ty_20 = 0;
+pub const xplm_CommandBegin: _bindgen_ty_45 = 0;
 #[doc = " The command is continuing to execute."]
-pub const xplm_CommandContinue: _bindgen_ty_20 = 1;
+pub const xplm_CommandContinue: _bindgen_ty_45 = 1;
 #[doc = " The command has ended."]
-pub const xplm_CommandEnd: _bindgen_ty_20 = 2;
+pub const xplm_CommandEnd: _bindgen_ty_45 = 2;
 #[doc = " XPLMCommandPhase\n\n The phases of a command.\n"]
-pub type _bindgen_ty_20 = ::std::os::raw::c_int;
+pub type _bindgen_ty_45 = ::std::os::raw::c_int;
 pub type XPLMCommandPhase = ::std::os::raw::c_int;
 #[doc = " XPLMCommandRef\n\n A command ref is an opaque identifier for an X-Plane command. Command\n references stay the same for the life of your plugin but not between\n executions of X-Plane. Command refs are used to execute commands, create\n commands, and create callbacks for particular commands.\n\n Note that a command is not \"owned\" by a particular plugin. Since many\n plugins may participate in a command's execution, the command does not go\n away if the plugin that created it is unloaded.\n"]
 pub type XPLMCommandRef = *mut ::std::os::raw::c_void;
@@ -2132,7 +3144,7 @@ extern "C" {
     pub fn XPLMCommandEnd(inCommand: XPLMCommandRef);
 }
 extern "C" {
-    #[doc = " XPLMCommandOnce\n\n This executes a given command momentarily, that is, the command begins and\n ends immediately. This is the equivalent of calling XPLMCommandBegin() and\n XPLMCommandEnd() back ot back.\n"]
+    #[doc = " XPLMCommandOnce\n\n This executes a given command momentarily, that is, the command begins and\n ends immediately. This is the equivalent of calling XPLMCommandBegin() and\n XPLMCommandEnd() back to back.\n"]
     pub fn XPLMCommandOnce(inCommand: XPLMCommandRef);
 }
 extern "C" {
@@ -2160,14 +3172,14 @@ extern "C" {
         inRefcon: *mut ::std::os::raw::c_void,
     );
 }
-#[doc = " there is no symbol to the left of the menu item."]
-pub const xplm_Menu_NoCheck: _bindgen_ty_21 = 0;
-#[doc = " the menu has a mark next to it that is unmarked (not lit)."]
-pub const xplm_Menu_Unchecked: _bindgen_ty_21 = 1;
-#[doc = " the menu has a mark next to it that is checked (lit)."]
-pub const xplm_Menu_Checked: _bindgen_ty_21 = 2;
-#[doc = " XPLMMenuCheck\n\n These enumerations define the various 'check' states for an X-Plane menu.\n 'checking' in X-Plane actually appears as a light which may or may not be\n lit.  So there are three possible states.\n"]
-pub type _bindgen_ty_21 = ::std::os::raw::c_int;
+#[doc = " There is no symbol to the left of the menu item."]
+pub const xplm_Menu_NoCheck: _bindgen_ty_46 = 0;
+#[doc = " The menu has a mark next to it that is unmarked (not lit)."]
+pub const xplm_Menu_Unchecked: _bindgen_ty_46 = 1;
+#[doc = " The menu has a mark next to it that is checked (lit)."]
+pub const xplm_Menu_Checked: _bindgen_ty_46 = 2;
+#[doc = " XPLMMenuCheck\n\n These enumerations define the various 'check' states for an X-Plane menu.\n 'Checking' in X-Plane actually appears as a light which may or may not be\n lit.  So there are three possible states.\n"]
+pub type _bindgen_ty_46 = ::std::os::raw::c_int;
 pub type XPLMMenuCheck = ::std::os::raw::c_int;
 #[doc = " XPLMMenuID\n\n This is a unique ID for each menu you create.\n"]
 pub type XPLMMenuID = *mut ::std::os::raw::c_void;
@@ -2262,21 +3274,21 @@ extern "C" {
     #[doc = " XPLMRemoveMenuItem\n\n Removes one item from a menu.  Note that all menu items below are moved up\n one; your plugin must track the change in index numbers.\n"]
     pub fn XPLMRemoveMenuItem(inMenu: XPLMMenuID, inIndex: ::std::os::raw::c_int);
 }
-pub const xplm_Nav_Unknown: _bindgen_ty_22 = 0;
-pub const xplm_Nav_Airport: _bindgen_ty_22 = 1;
-pub const xplm_Nav_NDB: _bindgen_ty_22 = 2;
-pub const xplm_Nav_VOR: _bindgen_ty_22 = 4;
-pub const xplm_Nav_ILS: _bindgen_ty_22 = 8;
-pub const xplm_Nav_Localizer: _bindgen_ty_22 = 16;
-pub const xplm_Nav_GlideSlope: _bindgen_ty_22 = 32;
-pub const xplm_Nav_OuterMarker: _bindgen_ty_22 = 64;
-pub const xplm_Nav_MiddleMarker: _bindgen_ty_22 = 128;
-pub const xplm_Nav_InnerMarker: _bindgen_ty_22 = 256;
-pub const xplm_Nav_Fix: _bindgen_ty_22 = 512;
-pub const xplm_Nav_DME: _bindgen_ty_22 = 1024;
-pub const xplm_Nav_LatLon: _bindgen_ty_22 = 2048;
+pub const xplm_Nav_Unknown: _bindgen_ty_47 = 0;
+pub const xplm_Nav_Airport: _bindgen_ty_47 = 1;
+pub const xplm_Nav_NDB: _bindgen_ty_47 = 2;
+pub const xplm_Nav_VOR: _bindgen_ty_47 = 4;
+pub const xplm_Nav_ILS: _bindgen_ty_47 = 8;
+pub const xplm_Nav_Localizer: _bindgen_ty_47 = 16;
+pub const xplm_Nav_GlideSlope: _bindgen_ty_47 = 32;
+pub const xplm_Nav_OuterMarker: _bindgen_ty_47 = 64;
+pub const xplm_Nav_MiddleMarker: _bindgen_ty_47 = 128;
+pub const xplm_Nav_InnerMarker: _bindgen_ty_47 = 256;
+pub const xplm_Nav_Fix: _bindgen_ty_47 = 512;
+pub const xplm_Nav_DME: _bindgen_ty_47 = 1024;
+pub const xplm_Nav_LatLon: _bindgen_ty_47 = 2048;
 #[doc = " XPLMNavType\n\n These enumerations define the different types of navaids.  They are each\n defined with a separate bit so that they may be bit-wise added together to\n form sets of nav-aid types.\n\n NOTE: xplm_Nav_LatLon is a specific lat-lon coordinate entered into the\n FMS. It will not exist in the database, and cannot be programmed into the\n FMS. Querying the FMS for navaids will return it.  Use\n XPLMSetFMSEntryLatLon to set a lat/lon waypoint.\n"]
-pub type _bindgen_ty_22 = ::std::os::raw::c_int;
+pub type _bindgen_ty_47 = ::std::os::raw::c_int;
 pub type XPLMNavType = ::std::os::raw::c_int;
 #[doc = " XPLMNavRef\n\n XPLMNavRef is an iterator into the navigation database.  The navigation\n database is essentially an array, but it is not necessarily densely\n populated. The only assumption you can safely make is that like-typed\n nav-aids are grouped together.\n\n Use XPLMNavRef to refer to a nav-aid.\n\n XPLM_NAV_NOT_FOUND is returned by functions that return an XPLMNavRef when\n the iterator must be invalid.\n"]
 pub type XPLMNavRef = ::std::os::raw::c_int;
@@ -2285,19 +3297,19 @@ extern "C" {
     pub fn XPLMGetFirstNavAid() -> XPLMNavRef;
 }
 extern "C" {
-    #[doc = " XPLMGetNextNavAid\n\n Given a valid nav aid ref, this routine returns the next navaid.  It\n returns XPLM_NAV_NOT_FOUND if the nav aid passed in was invalid or if the\n navaid passed in was the last one in the database.  Use this routine to\n iterate across all like-typed navaids or the entire database.\n"]
+    #[doc = " XPLMGetNextNavAid\n\n Given a valid navaid ref, this routine returns the next navaid.  It returns\n XPLM_NAV_NOT_FOUND if the navaid passed in was invalid or if the navaid\n passed in was the last one in the database.  Use this routine to iterate\n across all like-typed navaids or the entire database.\n"]
     pub fn XPLMGetNextNavAid(inNavAidRef: XPLMNavRef) -> XPLMNavRef;
 }
 extern "C" {
-    #[doc = " XPLMFindFirstNavAidOfType\n\n This routine returns the ref of the first navaid of the given type in the\n database or XPLM_NAV_NOT_FOUND if there are no navaids of that type in the\n database.  You must pass exactly one nav aid type to this routine.\n"]
+    #[doc = " XPLMFindFirstNavAidOfType\n\n This routine returns the ref of the first navaid of the given type in the\n database or XPLM_NAV_NOT_FOUND if there are no navaids of that type in the\n database.  You must pass exactly one navaid type to this routine.\n"]
     pub fn XPLMFindFirstNavAidOfType(inType: XPLMNavType) -> XPLMNavRef;
 }
 extern "C" {
-    #[doc = " XPLMFindLastNavAidOfType\n\n This routine returns the ref of the last navaid of the given type in the\n database or XPLM_NAV_NOT_FOUND if there are no navaids of that type in the\n database.  You must pass exactly one nav aid type to this routine.\n"]
+    #[doc = " XPLMFindLastNavAidOfType\n\n This routine returns the ref of the last navaid of the given type in the\n database or XPLM_NAV_NOT_FOUND if there are no navaids of that type in the\n database.  You must pass exactly one navaid type to this routine.\n"]
     pub fn XPLMFindLastNavAidOfType(inType: XPLMNavType) -> XPLMNavRef;
 }
 extern "C" {
-    #[doc = " XPLMFindNavAid\n\n This routine provides a number of searching capabilities for the nav\n database. XPLMFindNavAid will search through every nav aid whose type is\n within inType (multiple types may be added together) and return any\n nav-aids found based on the following rules:\n\n * If inLat and inLon are not NULL, the navaid nearest to that lat/lon will\n   be returned, otherwise the last navaid found will be returned.\n\n * If inFrequency is not NULL, then any navaids considered must match this\n   frequency.  Note that this will screen out radio beacons that do not have\n   frequency data published (like inner markers) but not fixes and airports.\n\n * If inNameFragment is not NULL, only navaids that contain the fragment in\n   their name will be returned.\n\n * If inIDFragment is not NULL, only navaids that contain the fragment in\n   their IDs will be returned.\n\n This routine provides a simple way to do a number of useful searches:\n * Find the nearest navaid on this frequency.\n * Find the nearest airport.\n * Find the VOR whose ID is \"KBOS\".\n * Find the nearest airport whose name contains \"Chicago\".\n"]
+    #[doc = " XPLMFindNavAid\n\n This routine provides a number of searching capabilities for the nav\n database. XPLMFindNavAid will search through every navaid whose type is\n within inType (multiple types may be added together) and return any navaids\n found based on the following rules:\n\n * If inLat and inLon are not NULL, the navaid nearest to that lat/lon will\n   be returned, otherwise the last navaid found will be returned.\n\n * If inFrequency is not NULL, then any navaids considered must match this\n   frequency.  Note that this will screen out radio beacons that do not have\n   frequency data published (like inner markers) but not fixes and airports.\n\n * If inNameFragment is not NULL, only navaids that contain the fragment in\n   their name will be returned.\n\n * If inIDFragment is not NULL, only navaids that contain the fragment in\n   their IDs will be returned.\n\n This routine provides a simple way to do a number of useful searches:\n * Find the nearest navaid on this frequency.\n * Find the nearest airport.\n * Find the VOR whose ID is \"KBOS\".\n * Find the nearest airport whose name contains \"Chicago\".\n"]
     pub fn XPLMFindNavAid(
         inNameFragment: *const ::std::os::raw::c_char,
         inIDFragment: *const ::std::os::raw::c_char,
@@ -2531,15 +3543,15 @@ extern "C" {
     );
 }
 #[doc = " Your callback runs before X-Plane integrates the flight model."]
-pub const xplm_FlightLoop_Phase_BeforeFlightModel: _bindgen_ty_23 = 0;
+pub const xplm_FlightLoop_Phase_BeforeFlightModel: _bindgen_ty_48 = 0;
 #[doc = " Your callback runs after X-Plane integrates the flight model."]
-pub const xplm_FlightLoop_Phase_AfterFlightModel: _bindgen_ty_23 = 1;
+pub const xplm_FlightLoop_Phase_AfterFlightModel: _bindgen_ty_48 = 1;
 #[doc = " XPLMFlightLoopPhaseType\n\n You can register a flight loop callback to run either before or after the\n flight model is integrated by X-Plane.\n"]
-pub type _bindgen_ty_23 = ::std::os::raw::c_int;
+pub type _bindgen_ty_48 = ::std::os::raw::c_int;
 pub type XPLMFlightLoopPhaseType = ::std::os::raw::c_int;
 #[doc = " XPLMFlightLoopID\n\n This is an opaque identifier for a flight loop callback. You can use this\n identifier to easily track and remove your callbacks, or to use the new\n flight loop APIs.\n"]
 pub type XPLMFlightLoopID = *mut ::std::os::raw::c_void;
-#[doc = " XPLMFlightLoop_f\n\n This is your flight loop callback. Each time the flight loop is iterated\n through, you receive this call at the end.\n\n Flight loop callbacks receive a number of input timing parameters. These\n input timing parameters are not particularly useful; you may need to track\n your own timing data (e.g. by reading datarefs). The input parameters are:\n\n - inElapsedSinceLastCall: the wall time since your last callback.\n - inElapsedTimeSinceLastFlightLoop: the wall time since any flight loop was\n   dispatched.\n - inCounter: a monotonically increasing counter, bumped once per flight\n   loop dispatch from the sim.\n - inRefcon: your own ptr constant from when you regitered yor callback.\n\n Your return value controls when you will next be called.\n\n  - Return 0 to stop receiving callbacks.\n  - Pass a positive number to specify how many seconds until the next\n    callback. (You will be called at or after this time, not before.)\n  - Pass a negative number to specify how many loops must go by until you\n    are called. For example, -1.0 means call me the very next loop.\n\n Try to run your flight loop as infrequently as is practical, and suspend it\n (using return value 0) when you do not need it; lots of flight loop\n callbacks that do nothing lowers X-Plane's frame rate.\n\n Your callback will NOT be unregistered if you return 0; it will merely be\n inactive.\n"]
+#[doc = " XPLMFlightLoop_f\n\n This is your flight loop callback. Each time the flight loop is iterated\n through, you receive this call at the end.\n\n Flight loop callbacks receive a number of input timing parameters. These\n input timing parameters are not particularly useful; you may need to track\n your own timing data (e.g. by reading datarefs). The input parameters are:\n\n - inElapsedSinceLastCall: the wall time since your last callback.\n - inElapsedTimeSinceLastFlightLoop: the wall time since any flight loop was\n   dispatched.\n - inCounter: a monotonically increasing counter, bumped once per flight\n   loop dispatch from the sim.\n - inRefcon: your own pointer constant provided when you registered yor\n   callback.\n\n Your return value controls when you will next be called.\n\n  - Return 0 to stop receiving callbacks.\n  - Return a positive number to specify how many seconds until the next\n    callback. (You will be called at or after this time, not before.)\n  - Return a negative number to specify how many loops must go by until you\n    are called. For example, -1.0 means call me the very next loop.\n\n Try to run your flight loop as infrequently as is practical, and suspend it\n (using return value 0) when you do not need it; lots of flight loop\n callbacks that do nothing lowers X-Plane's frame rate.\n\n Your callback will NOT be unregistered if you return 0; it will merely be\n inactive.\n"]
 pub type XPLMFlightLoop_f = ::std::option::Option<
     unsafe extern "C" fn(
         inElapsedSinceLastCall: f32,
@@ -2548,7 +3560,7 @@ pub type XPLMFlightLoop_f = ::std::option::Option<
         inRefcon: *mut ::std::os::raw::c_void,
     ) -> f32,
 >;
-#[doc = " XPLMCreateFlightLoop_t\n\n XPLMCreateFlightLoop_t contains the parameters to create a new flight loop\n callback. The strsucture can be expanded in future SDKs - always set\n structSize to the size of your structure in bytes.\n"]
+#[doc = " XPLMCreateFlightLoop_t\n\n XPLMCreateFlightLoop_t contains the parameters to create a new flight loop\n callback. The structure may be expanded in future SDKs - always set\n structSize to the size of your structure in bytes.\n"]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct XPLMCreateFlightLoop_t {
@@ -2622,7 +3634,7 @@ extern "C" {
     pub fn XPLMGetCycleNumber() -> ::std::os::raw::c_int;
 }
 extern "C" {
-    #[doc = " XPLMRegisterFlightLoopCallback\n\n This routine registers your flight loop callback. Pass in a pointer to a\n flight loop function and a refcon. inInterval defines when you will be\n called. Pass in a positive number to specify seconds from registration time\n to the next callback. Pass in a negative number to indicate when you will\n be called (e.g. pass -1 to be called at the next cylcle). Pass 0 to not be\n called; your callback will be inactive.\n\n (This legacy function only installs pre-flight-loop callbacks; use\n XPLMCreateFlightLoop for more control.)\n"]
+    #[doc = " XPLMRegisterFlightLoopCallback\n\n This routine registers your flight loop callback. Pass in a pointer to a\n flight loop function and a refcon (an optional reference value determined\n by you). inInterval defines when you will be called. Pass in a positive\n number to specify seconds from registration time to the next callback. Pass\n in a negative number to indicate when you will be called (e.g. pass -1 to\n be called at the next cylcle). Pass 0 to not be called; your callback will\n be inactive.\n\n (This legacy function only installs pre-flight-loop callbacks; use\n XPLMCreateFlightLoop for more control.)\n"]
     pub fn XPLMRegisterFlightLoopCallback(
         inFlightLoop: XPLMFlightLoop_f,
         inInterval: f32,
@@ -2654,7 +3666,7 @@ extern "C" {
     pub fn XPLMDestroyFlightLoop(inFlightLoopID: XPLMFlightLoopID);
 }
 extern "C" {
-    #[doc = " XPLMScheduleFlightLoop\n\n This routine schedules a flight loop callback for future execution. If\n inInterval is negative, it is run in a certain number of frames based on\n the absolute value of the input. If the interval is positive, it is a\n duration in seconds.\n\n If inRelativeToNow is true, ties are interpretted relative to the time this\n routine is called; otherwise they are relative to the last call time or the\n time the flight loop was registered (if never called).\n"]
+    #[doc = " XPLMScheduleFlightLoop\n\n This routine schedules a flight loop callback for future execution. If\n inInterval is negative, it is run in a certain number of frames based on\n the absolute value of the input. If the interval is positive, it is a\n duration in seconds.\n\n If inRelativeToNow is true, times are interpreted relative to the time this\n routine is called; otherwise they are relative to the last call time or the\n time the flight loop was registered (if never called).\n"]
     pub fn XPLMScheduleFlightLoop(
         inFlightLoopID: XPLMFlightLoopID,
         inInterval: f32,
