@@ -2,8 +2,26 @@ name: Continuous Integration
 on: [push, pull_request]
 
 jobs:
-  rustfmt:
-    name: rustfmt
+  build_and_test:
+    name: Build and Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    env:
+      XPLANE_SDK_PATH: ${{ github.workspace }}/xplane-sdk-sys/SDK
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Build
+        run: cargo build --workspace --all-features
+      - name: Test
+        run: cargo test --workspace --all-features
+
+  check_formatting:
+    name: Check Rust formatting
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

@@ -40,5 +40,5 @@ versions `3.0.3` and `4.0.0` respectively.
 Please note that SDK versions do not automatically imply older versions. To ensure that the latest version with all
 features is targeted, it is necessary to specify every version.
 
-If you leave the XPLANE_SDK_VERSIONS environment variable unspecified, the default set of versions used for generating
+If you leave the `XPLANE_SDK_VERSIONS` environment variable unspecified, the default set of versions used for generating
 the pre-built binding will be applied.
