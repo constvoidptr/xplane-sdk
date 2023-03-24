@@ -4,6 +4,15 @@ use std::path::{Path, PathBuf};
 const XPLANE_SDK_PATH_KEY: &str = "XPLANE_SDK_PATH";
 #[cfg(feature = "generate-bindings")]
 const XPLANE_SDK_VERSIONS_KEY: &str = "XPLANE_SDK_VERSIONS";
+#[cfg(feature = "generate-bindings")]
+// Default XPLM version definitions
+const DEFAULT_XPLM_VERSION_DEFINITIONS: [&str; 5] = [
+    "-DXPLM200",
+    "-DXPLM210",
+    "-DXPLM300",
+    "-DXPLM301",
+    "-DXPLM303",
+];
 
 fn main() {
     // Pre-built SDK path
@@ -50,44 +59,31 @@ fn generate_bindings(sdk_path: &Path) {
             .expect("failed to gather header files in `XPLM`"),
     );
 
-    // Get custom versions environment variable
-    let custom_versions = std::env::var(XPLANE_SDK_VERSIONS_KEY).unwrap_or_default();
-
-    // Create iterator over custom versions
-    // Semicolon-separated list of SDK versions. Example: "XPLM400;XPLM401"
-    let custom_versions_iter = custom_versions
-        .split(|c| c == ';')
-        .map(|version| version.trim())
-        .filter(|version| !version.is_empty())
-        .map(|version| format!("-D{}", version));
-
     // Setup builder
     let mut builder = bindgen::Builder::default()
         // Pass arguments to clang
         .clang_args([
+            // Target C++ because some sneaked into the latest SDK version
+            "-x",
+            "c++",
             // Parse all comments as documentation
             "-fparse-all-comments",
             // Define platform - irrelevant for Rust
             "-DLIN=1",
-            // Specify XPLM versions
+            // Minimal XPLM version is always defined
             "-DXPLM200",
-            #[cfg(feature = "XPLM210")]
-            "-DXPLM210",
-            #[cfg(feature = "XPLM300")]
-            "-DXPLM300",
-            #[cfg(feature = "XPLM301")]
-            "-DXPLM301",
-            #[cfg(feature = "XPLM303")]
-            "-DXPLM303",
         ]);
 
-    // Add all SDK headers
+    // Add SDK headers
     for header in headers {
         builder = builder.header(header);
     }
 
-    // Add custom version definitions
-    builder = builder.clang_args(custom_versions_iter);
+    // Use custom SDK versions if they are specified, otherwise use the default
+    match custom_sdk_versions() {
+        Some(custom_versions) => builder = builder.clang_args(custom_versions),
+        None => builder = builder.clang_args(DEFAULT_XPLM_VERSION_DEFINITIONS),
+    };
 
     // Generate bindings
     let bindings = builder
@@ -136,4 +132,33 @@ fn link_libraries(sdk_path: &Path) {
         println!("cargo:rustc-link-lib=framework=XPLM");
         println!("cargo:rustc-link-lib=framework=XPWidgets");
     }
+}
+
+/// Parse the custom version environment variable
+///
+/// Returns A Vec of version definitions to pass to Clang. Or None if the variable was not defined.
+///
+/// # Panics
+///
+/// Panics if the environment variable didn't contain valid UTF-8
+#[cfg(feature = "generate-bindings")]
+fn custom_sdk_versions() -> Option<Vec<String>> {
+    // Semicolon-separated list of SDK versions. Example: "XPLM400;XPLM401"
+    let custom_versions = match std::env::var(XPLANE_SDK_VERSIONS_KEY) {
+        Ok(versions) => versions,
+        Err(std::env::VarError::NotPresent) => return None,
+        Err(std::env::VarError::NotUnicode(_)) => panic!(
+            "`{}` environment variable has to be valid UTF-8",
+            XPLANE_SDK_VERSIONS_KEY
+        ),
+    };
+
+    Some(
+        custom_versions
+            .split(';')
+            .map(str::trim)
+            .filter(|v| !v.is_empty())
+            .map(|version| format!("-D{}", version))
+            .collect(),
+    )
 }
