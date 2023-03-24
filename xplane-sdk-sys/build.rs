@@ -71,9 +71,13 @@ fn generate_bindings(sdk_path: &Path) {
             "-DLIN=1",
             // Specify XPLM versions
             "-DXPLM200",
+            #[cfg(feature = "XPLM210")]
             "-DXPLM210",
+            #[cfg(feature = "XPLM300")]
             "-DXPLM300",
+            #[cfg(feature = "XPLM301")]
             "-DXPLM301",
+            #[cfg(feature = "XPLM303")]
             "-DXPLM303",
         ]);
 
