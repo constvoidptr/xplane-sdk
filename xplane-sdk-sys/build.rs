@@ -1,5 +1,3 @@
-use std::path::{Path, PathBuf};
-
 #[cfg(feature = "generate-bindings")]
 const XPLANE_SDK_PATH_KEY: &str = "XPLANE_SDK_PATH";
 #[cfg(feature = "generate-bindings")]
@@ -16,16 +14,19 @@ const DEFAULT_XPLM_VERSION_DEFINITIONS: [&str; 5] = [
 
 fn main() {
     // Pre-built SDK path
-    #[cfg(not(feature = "generate-bindings"))]
+    #[cfg(all(
+        not(feature = "generate-bindings"),
+        any(target_os = "windows", target_os = "macos")
+    ))]
     let sdk_path = std::env::var("CARGO_MANIFEST_DIR")
-        .map(PathBuf::from)
+        .map(std::path::PathBuf::from)
         .expect("failed to locate packaged SDK, env variable `CARGO_MANIFEST_DIR` should be set")
         .join("SDK");
 
     // Retrieve SKD path from environment variable
     #[cfg(feature = "generate-bindings")]
     let sdk_path = std::env::var(XPLANE_SDK_PATH_KEY)
-        .map(PathBuf::from)
+        .map(std::path::PathBuf::from)
         .expect("failed to locate the SDK, env variable `XPLANE_SDK_PATH` should point to the SDK");
 
     // Only generate bindings if the feature is set
@@ -38,14 +39,14 @@ fn main() {
 }
 
 #[cfg(feature = "generate-bindings")]
-fn generate_bindings(sdk_path: &Path) {
+fn generate_bindings(sdk_path: &std::path::Path) {
     // Re-run the build script if any SDK change is detected
     println!("cargo:rerun-if-env-changed={XPLANE_SDK_PATH_KEY}");
     println!("cargo:rerun-if-env-changed={XPLANE_SDK_VERSIONS_KEY}");
 
     let include_path = sdk_path.join("CHeaders");
     let out_path = std::env::var("OUT_DIR")
-        .map(PathBuf::from)
+        .map(std::path::PathBuf::from)
         .expect("env variable `OUT_DIR` should be defined");
 
     // Collect headers
@@ -99,7 +100,7 @@ fn generate_bindings(sdk_path: &Path) {
 
 /// Collects all header files in the directory
 #[cfg(feature = "generate-bindings")]
-fn collect_headers(dir: &Path) -> std::io::Result<Vec<String>> {
+fn collect_headers(dir: &std::path::Path) -> std::io::Result<Vec<String>> {
     let mut headers = Vec::new();
     for entry in dir.read_dir()? {
         let entry = entry?;
@@ -112,7 +113,7 @@ fn collect_headers(dir: &Path) -> std::io::Result<Vec<String>> {
 }
 
 #[cfg(any(target_os = "windows", target_os = "macos"))]
-fn link_libraries(sdk_path: &Path) {
+fn link_libraries(sdk_path: &std::path::Path) {
     let library_path = sdk_path.join("Libraries");
 
     // Can only ever be Windows or MacOS
