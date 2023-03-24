@@ -52,12 +52,12 @@ fn generate_bindings(sdk_path: &std::path::Path) {
     // Collect headers
     let mut headers = Vec::new();
     headers.extend_from_slice(
-        &collect_headers(&include_path.join("Widgets"))
-            .expect("failed to gather header files in `Widgets`"),
-    );
-    headers.extend_from_slice(
         &collect_headers(&include_path.join("XPLM"))
             .expect("failed to gather header files in `XPLM`"),
+    );
+    headers.extend_from_slice(
+        &collect_headers(&include_path.join("Widgets"))
+            .expect("failed to gather header files in `Widgets`"),
     );
 
     // Setup builder
@@ -73,6 +73,9 @@ fn generate_bindings(sdk_path: &std::path::Path) {
             "-DLIN=1",
             // Minimal XPLM version is always defined
             "-DXPLM200",
+            // Include directories
+            &format!("-I{}", include_path.join("XPLM").display()),
+            &format!("-I{}", include_path.join("Widgets").display()),
         ]);
 
     // Add SDK headers
