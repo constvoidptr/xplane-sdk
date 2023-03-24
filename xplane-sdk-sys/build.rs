@@ -31,7 +31,6 @@ fn main() {
 #[cfg(feature = "generate-bindings")]
 fn generate_bindings(sdk_path: &Path) {
     // Re-run the build script if any SDK change is detected
-    println!("cargo:rerun-if-changed=wrapper.h");
     println!("cargo:rerun-if-env-changed={XPLANE_SDK_PATH_KEY}");
     println!("cargo:rerun-if-env-changed={XPLANE_SDK_VERSIONS_KEY}");
 
@@ -39,6 +38,17 @@ fn generate_bindings(sdk_path: &Path) {
     let out_path = std::env::var("OUT_DIR")
         .map(PathBuf::from)
         .expect("env variable `OUT_DIR` should be defined");
+
+    // Collect headers
+    let mut headers = Vec::new();
+    headers.extend_from_slice(
+        &collect_headers(&include_path.join("Widgets"))
+            .expect("failed to gather header files in `Widgets`"),
+    );
+    headers.extend_from_slice(
+        &collect_headers(&include_path.join("XPLM"))
+            .expect("failed to gather header files in `XPLM`"),
+    );
 
     // Get custom versions environment variable
     let custom_versions = std::env::var(XPLANE_SDK_VERSIONS_KEY).unwrap_or_default();
@@ -52,36 +62,53 @@ fn generate_bindings(sdk_path: &Path) {
         .map(|version| format!("-D{}", version));
 
     // Setup builder
-    let builder = bindgen::Builder::default()
+    let mut builder = bindgen::Builder::default()
         // Pass arguments to clang
         .clang_args([
             // Parse all comments as documentation
             "-fparse-all-comments",
+            // Define platform - irrelevant for Rust
+            "-DLIN=1",
             // Specify XPLM versions
             "-DXPLM200",
             "-DXPLM210",
             "-DXPLM300",
             "-DXPLM301",
             "-DXPLM303",
-            // Define platform - irrelevant for Rust
-            "-DLIN=1",
-            // Include directories
-            &format!("-I{}", include_path.join("XPLM").display()),
-            &format!("-I{}", include_path.join("Widgets").display()),
-        ])
-        .header("wrapper.h")
-        .parse_callbacks(Box::new(bindgen::CargoCallbacks));
+        ]);
+
+    // Add all SDK headers
+    for header in headers {
+        builder = builder.header(header);
+    }
 
     // Add custom version definitions
-    let builder = builder.clang_args(custom_versions_iter);
+    builder = builder.clang_args(custom_versions_iter);
 
     // Generate bindings
-    let bindings = builder.generate().expect("failed to generate bindings");
+    let bindings = builder
+        .parse_callbacks(Box::new(bindgen::CargoCallbacks))
+        .generate()
+        .expect("failed to generate bindings");
 
     // Write bindings to disk
     bindings
         .write_to_file(out_path.join("bindings.rs"))
         .expect("failed to write bindings to disk");
+}
+
+/// Collects all header files in the directory
+#[cfg(feature = "generate-bindings")]
+fn collect_headers(dir: &Path) -> std::io::Result<Vec<String>> {
+    let mut headers = Vec::new();
+    for entry in dir.read_dir()? {
+        let entry = entry?;
+        let path = entry.path();
+        if path.is_file() && path.extension().map(|ext| ext == "h").unwrap_or_default() {
+            headers.push(path.to_str().expect("path is not valid UTF-8").to_string());
+        }
+    }
+    Ok(headers)
 }
 
 #[cfg(any(target_os = "windows", target_os = "macos"))]
