@@ -64,9 +64,6 @@ fn generate_bindings(sdk_path: &std::path::Path) {
     let mut builder = bindgen::Builder::default()
         // Pass arguments to clang
         .clang_args([
-            // Target C++ because some sneaked into the latest SDK version
-            "-x",
-            "c++",
             // Parse all comments as documentation
             "-fparse-all-comments",
             // Define platform - irrelevant for Rust

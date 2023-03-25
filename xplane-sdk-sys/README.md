@@ -34,8 +34,8 @@ When generating bindings yourself you can specify what XPLM versions you would l
 target earlier X-Plane versions but also ensures that the library is compatible with future versions.
 
 To achieve this, you need to set the `XPLANE_SDK_VERSIONS` environment variable. It expects a semicolon-separated list
-of SDK versions. Defining at as `XPLM303;XPLM400`, for example, will result in the generation of bindings for SDK
-versions `3.0.3` and `4.0.0` respectively.
+of SDK versions. Defining at as `XPLM400;XPLM401`, for example, will result in the generation of bindings for SDK
+versions `4.0.0` and `4.0.1` respectively.
 
 Please note that SDK versions do not automatically imply older versions. To ensure that the latest version with all
 features is targeted, it is necessary to specify every version.

@@ -32,7 +32,12 @@ SDK website explains this process in more detail.
 
 This section contains per-release notes for the history of the X-Plane SDK.
 
-X-Plane SDK Release 4.0.0 3/7/2022
+X-Plane SDK Release 4.0.1 3/16/2023
+
+The 4.0.1 SDK fixes the XPLMSound.h header, which contained invalid C code
+(C++ struct definitons for FMOD_VECTOR and FMOD_ enums.)
+
+X-Plane SDK Release 4.0.0 3/8/2023
 
 The 4.0.0 SDK adds support for ARM64 Macs.  The 4.0 SDK is supported by X-Plane
 12.04 (but can be used with X-Plane 12.00 if not using the weather, sound or 
