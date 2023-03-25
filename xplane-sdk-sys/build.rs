@@ -140,7 +140,7 @@ fn link_libraries(sdk_path: &std::path::Path) {
 
 /// Parse the custom version environment variable
 ///
-/// Returns A Vec of version definitions to pass to Clang. Or None if the variable was not defined.
+/// Returns a Vec of version definitions to pass to Clang. Or None if the variable was not defined.
 ///
 /// # Panics
 ///

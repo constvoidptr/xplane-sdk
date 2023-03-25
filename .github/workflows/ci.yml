@@ -19,6 +19,8 @@ jobs:
       - name: Build
         run: cargo build --workspace --all-features
       - name: Test
+        # Don't run tests on macOS, CI has no access to the dylib's in X-Planes plugin directory
+        if: matrix.os != 'macos-latest'
         run: cargo test --workspace --all-features
 
   check_formatting:
