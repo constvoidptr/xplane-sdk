@@ -4,12 +4,13 @@ const XPLANE_SDK_PATH_KEY: &str = "XPLANE_SDK_PATH";
 const XPLANE_SDK_VERSIONS_KEY: &str = "XPLANE_SDK_VERSIONS";
 #[cfg(feature = "generate-bindings")]
 // Default XPLM version definitions
-const DEFAULT_XPLM_VERSION_DEFINITIONS: [&str; 5] = [
+const DEFAULT_XPLM_VERSION_DEFINITIONS: [&str; 6] = [
     "-DXPLM200",
     "-DXPLM210",
     "-DXPLM300",
     "-DXPLM301",
     "-DXPLM303",
+    "-DXPLM400",
 ];
 
 fn main() {
@@ -68,8 +69,6 @@ fn generate_bindings(sdk_path: &std::path::Path) {
             "-fparse-all-comments",
             // Define platform - irrelevant for Rust
             "-DLIN=1",
-            // Minimal XPLM version is always defined
-            "-DXPLM200",
             // Include directories
             &format!("-I{}", include_path.join("XPLM").display()),
             &format!("-I{}", include_path.join("Widgets").display()),

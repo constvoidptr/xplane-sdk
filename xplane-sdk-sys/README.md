@@ -7,7 +7,7 @@ Low level Rust bindings for the [X-Plane SDK](https://developer.x-plane.com/sdk/
 
 ## Features
 
-* Includes pre-built bindings for version `XPLM303` (X-Plane 11.50 and newer)
+* Includes pre-built bindings for version `XPLM400` (X-Plane 12.04 and newer)
 * Option to generate bindings at compile-time, using your own SDK version
 * Allows for precise version specification when using compile-time generated bindings
 
@@ -38,7 +38,7 @@ of SDK versions. Defining at as `XPLM400;XPLM401`, for example, will result in t
 versions `4.0.0` and `4.0.1` respectively.
 
 Please note that SDK versions do not automatically imply older versions. To ensure that the latest version with all
-features is targeted, it is necessary to specify every version.
+features is targeted, it is necessary to specify every version individually.
 
 If you leave the `XPLANE_SDK_VERSIONS` environment variable unspecified, the default set of versions used for generating
 the pre-built binding will be applied.
