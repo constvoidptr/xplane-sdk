@@ -88,7 +88,7 @@ fn generate_bindings(sdk_path: &std::path::Path) {
 
     // Generate bindings
     let bindings = builder
-        .parse_callbacks(Box::new(bindgen::CargoCallbacks))
+        .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
         .generate()
         .expect("failed to generate bindings");
 
