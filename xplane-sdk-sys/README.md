@@ -42,3 +42,16 @@ features is targeted, it is necessary to specify every version individually.
 
 If you leave the `XPLANE_SDK_VERSIONS` environment variable unspecified, the default set of versions used for generating
 the pre-built binding will be applied.
+
+### Changelog
+
+##### Version 0.3
+* Include XPLM400 in pre-built bindings
+* Update SDK version to 4.0.1
+
+##### Version 0.2
+* Update SDK version to 4.0.0
+* Switch from cargo feature based version selection to environment variable definitions
+
+##### Version 0.1
+* Initial release with pre-built or compile time generated bindings
