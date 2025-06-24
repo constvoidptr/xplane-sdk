@@ -7,7 +7,7 @@ Low level Rust bindings for the [X-Plane SDK](https://developer.x-plane.com/sdk/
 
 ## Features
 
-* Includes pre-built bindings for version `XPLM400` (X-Plane 12.04 and newer)
+* Includes pre-built bindings for version `XPLM410` (X-Plane 12.1.0 and newer)
 * Option to generate bindings at compile-time, using your own SDK version
 * Allows for precise version specification when using compile-time generated bindings
 
@@ -30,7 +30,7 @@ documented [here](https://rust-lang.github.io/rust-bindgen/requirements.html).
 
 ### SDK version selection
 
-When generating bindings yourself you can specify what XPLM versions you would like to use. This not only enables you to
+When generating bindings yourself, you can specify what XPLM versions you would like to use. This not only enables you to
 target earlier X-Plane versions but also ensures that the library is compatible with future versions.
 
 To achieve this, you need to set the `XPLANE_SDK_VERSIONS` environment variable. It expects a semicolon-separated list
@@ -44,6 +44,11 @@ If you leave the `XPLANE_SDK_VERSIONS` environment variable unspecified, the def
 the pre-built binding will be applied.
 
 ### Changelog
+
+#### Version 0.4
+* Target XPLM410 for pre-built bindings
+* Update SDK version to 4.1.1
+* Migrate crate to Rust Edition 2024
 
 ##### Version 0.3
 * Include XPLM400 in pre-built bindings

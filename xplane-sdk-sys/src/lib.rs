@@ -2,7 +2,8 @@
     non_snake_case,
     non_camel_case_types,
     non_upper_case_globals,
-    rustdoc::bare_urls
+    rustdoc::bare_urls,
+    rustdoc::invalid_rust_codeblocks
 )]
 #![doc = include_str!("../README.md")]
 
