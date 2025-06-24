@@ -4,13 +4,14 @@ const XPLANE_SDK_PATH_KEY: &str = "XPLANE_SDK_PATH";
 const XPLANE_SDK_VERSIONS_KEY: &str = "XPLANE_SDK_VERSIONS";
 #[cfg(feature = "generate-bindings")]
 // Default XPLM version definitions
-const DEFAULT_XPLM_VERSION_DEFINITIONS: [&str; 6] = [
+const DEFAULT_XPLM_VERSION_DEFINITIONS: [&str; 7] = [
     "-DXPLM200",
     "-DXPLM210",
     "-DXPLM300",
     "-DXPLM301",
     "-DXPLM303",
     "-DXPLM400",
+    "-DXPLM410",
 ];
 
 fn main() {
